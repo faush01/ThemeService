@@ -1,0 +1,10 @@
+﻿@{
+	List<string> messages = (List<string>)ViewData["messages"];
+}
+
+<ul>
+@foreach(string message in messages)
+{
+	<li>@message</li>
+}
+</ul>

@@ -1,0 +1,48 @@
+-- create theme table
+
+DROP TABLE theme_data;
+CREATE TABLE theme_data 
+( 
+   id int IDENTITY(1,1) NOT NULL,
+   imdb varchar(256) DEFAULT '' NOT NULL,
+   themoviedb varchar(256) DEFAULT '' NOT NULL,
+   thetvdb varchar(256) DEFAULT '' NOT NULL,
+   season int DEFAULT -1 NOT NULL,
+   episode int DEFAULT -1 NOT NULL,
+   description varchar(256) DEFAULT '' NOT NULL,
+   added_by varchar(256) DEFAULT '' NOT NULL,
+   added_date DateTime DEFAULT GETDATE() NOT NULL,
+   theme_cp_data_size int DEFAULT -1 NOT NULL,
+   theme_cp_data_md5 varchar(256) DEFAULT '' NOT NULL,
+   theme_cp_data text
+);
+ALTER TABLE theme_data ADD CONSTRAINT pk_theme_data_id PRIMARY KEY(id);
+
+INSERT INTO theme_data (imdb, themoviedb, thetvdb, season, episode, description, added_by, theme_cp_data_size, theme_cp_data_md5, theme_cp_data)
+VALUES ('tt5171438', '67198', '328711', 1, 10, 'ST Discovery', 'teamb', 25, 'an md5 of the cp data', 'some base64 data here');
+
+INSERT INTO theme_data (themoviedb, theme_cp_data, added_by)
+VALUES ('67198', 'some base64 data here', 'teamb');
+
+INSERT INTO theme_data (imdb, themoviedb, thetvdb, description, theme_cp_data, added_by)
+VALUES ('tt5171438', '67198', '328711', 'ST Discovery', 'some base64 data here', 'teamb');
+
+select * from theme_data;
+
+-- create user table
+
+DROP TABLE users;
+CREATE TABLE users 
+( 
+   id int IDENTITY(1,1) NOT NULL,
+   username varchar(256),
+   password varchar(256),
+   access int DEFAULT -1 NOT NULL,
+   lastlogin datetime
+);
+ALTER TABLE users ADD CONSTRAINT pk_users_id PRIMARY KEY(id);
+
+INSERT INTO users (username, password) VALUES ('user01', 'password01');
+INSERT INTO users (username, password) VALUES ('user02', 'password02');
+
+SELECT * FROM users;

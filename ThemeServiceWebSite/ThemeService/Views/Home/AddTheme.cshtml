@@ -1,0 +1,49 @@
+﻿@{
+	ViewData["Title"] = "Home Page";
+}
+
+<h4>Add Theme</h4>
+
+<form method="POST" action="@Url.Action("AddNewTheme", "Home")" enctype="multipart/form-data">
+
+	<table>
+		<tr>
+			<td>imbd</td>
+			<td><input type="text" name="imbd" /></td>
+		</tr>
+		<tr>
+			<td>themoviedb</td>
+			<td><input type="text" name="themoviedb" /></td>
+		</tr>
+		<tr>
+			<td>thetvdb</td>
+			<td><input type="text" name="thetvdb" /></td>
+		</tr>
+
+		<tr>
+			<td>season</td>
+			<td><input type="text" name="season" /></td>
+		</tr>
+		<tr>
+			<td>episode</td>
+			<td><input type="text" name="episode" /></td>
+		</tr>
+
+		<tr>
+			<td>description</td>
+			<td><input type="text" name="description" /></td>
+		</tr>
+
+		<tr>
+			<td>CP Bin File</td>
+			<td><input type="file" name="cp_data" /></td>
+		</tr>
+		<tr>
+			<td colspan="2"><button type="submit" class="btn btn-outline-info btn-sm">Submit</button></td>
+		</tr>
+
+	</table>
+
+</form>
+
+

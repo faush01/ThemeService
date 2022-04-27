@@ -1,0 +1,27 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    string message = (string)ViewData["message"];
+}
+
+@if(!string.IsNullOrEmpty(message))
+{
+    <div>Note: @message</div><br />
+}
+
+<h4>Login</h4>
+
+<form method="POST" action="@Url.Action("Process", "Login")">
+
+    <table>
+        <tr><td>User Name</td><td><input type="text" name="username" value="" /></td></tr>
+        <tr><td>Password</td><td><input type="text" name="password" value="" /></td></tr>
+        <tr><td colspan="2">
+            <button type="submit" class="btn btn-outline-info btn-sm">Login</button>
+        </td></tr>
+    </table>
+
+</form>
+
+<br />
+<a href="@Url.Action("CreateUser", "Login")">Create Login</a>
+

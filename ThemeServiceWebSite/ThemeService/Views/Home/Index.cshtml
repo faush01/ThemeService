@@ -1,0 +1,52 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+
+    List<ThemeData> theme_list = (List<ThemeData>)ViewData["theme_list"];
+    if(theme_list == null)
+    {
+        theme_list = new List<ThemeData>();
+    }
+}
+
+<div class="text-center">
+    <h4>Welcome</h4>
+    <p>TV show theme music chromaprints</p>
+</div>
+
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">imdb</th>
+            <th scope="col">themoviedb</th>
+            <th scope="col">thetvdb</th>
+            <th scope="col">season</th>
+            <th scope="col">episode</th>
+            <th scope="col">added_by</th>
+            <th scope="col">added_date</th>
+            <th scope="col">cp_md5</th>
+            <th scope="col">cp_size</th>
+            <th scope="col">description</th>
+        </tr>
+    </thead>
+
+    <tbody>
+    @foreach(ThemeData theme in theme_list)
+    {
+        <tr>
+            <td><a href="@Url.Action("ShowItemInfo", "Home")?id=@theme.id">view</a></td>
+            <td>@theme.imdb</td>
+            <td>@theme.themoviedb</td>
+            <td>@theme.thetvdb</td>
+            <td>@theme.season</td>
+            <td>@theme.episode</td>
+            <td>@theme.added_by</td>
+            <td>@theme.added_date</td>
+            <td>@theme.theme_cp_data_md5</td>
+            <td>@theme.theme_cp_data_size</td>
+            <td>@theme.description</td>
+        </tr>
+    }
+    </tbody>
+</table>
+

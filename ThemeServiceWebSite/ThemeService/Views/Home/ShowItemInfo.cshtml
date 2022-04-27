@@ -1,0 +1,72 @@
+﻿@{
+	ThemeData theme_data = (ThemeData)ViewData["theme_data"];
+	if(theme_data == null)
+	{
+		theme_data = new ThemeData();
+	}
+    UserInfo user_info = (UserInfo)ViewData["user_info"];
+    if (user_info == null)
+    {
+        user_info = new UserInfo();
+    }
+}
+
+<h4>Theme chormaprint info</h4>
+
+@if(!string.IsNullOrEmpty(user_info.username) && !string.IsNullOrEmpty(theme_data.added_by) && user_info.username == theme_data.added_by)
+{
+	<div><a href="@Url.Action("DeleteTheme", "Home")?id=@theme_data.id" onclick="return confirm('Are you sure you want to delete this item?');">Delete</a></div>
+}
+
+<table class="table table-sm">
+	<tr>
+		<td>id</td>
+		<td>@theme_data.id</td>
+	</tr>
+	<tr>
+		<td>imbd</td>
+		<td>@theme_data.imdb</td>
+	</tr>
+	<tr>
+		<td>themoviedb</td>
+		<td>@theme_data.themoviedb</td>
+	</tr>
+	<tr>
+		<td>thetvdb</td>
+		<td>@theme_data.thetvdb</td>
+	</tr>
+	<tr>
+		<td>season</td>
+		<td>@theme_data.season</td>
+	</tr>
+	<tr>
+		<td>episode</td>
+		<td>@theme_data.episode</td>
+	</tr>
+	<tr>
+		<td>description</td>
+		<td>@theme_data.description</td>
+	</tr>
+	<tr>
+		<td>added_by</td>
+		<td>@theme_data.added_by</td>
+	</tr>
+	<tr>
+		<td>added_date</td>
+		<td>@theme_data.added_date</td>
+	</tr>
+	<tr>
+		<td>Chromaprint size</td>
+		<td>@theme_data.theme_cp_data_size</td>
+	</tr>
+	<tr>
+		<td>Chromaprint md5</td>
+		<td>@theme_data.theme_cp_data_md5</td>
+	</tr>
+	<tr>
+		<td colspan="2">
+			Chromaprint Data:<br />
+			<pre>@StringUtils.WrapString(theme_data.theme_cp_data, 150)</pre>
+		</td>
+	</tr>
+</table>
