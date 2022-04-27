@@ -49,8 +49,16 @@ int theme_start = (int)(min_offset / 8.06);
 TimeSpan ts = new TimeSpan(0, 0, theme_start);
 Console.WriteLine("Theme At : " + ts);
 
+// https://stackoverflow.com/questions/1024904/calculating-hamming-weight-efficiently-in-matlab
+// http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetNaive
 uint GetHammingDist(uint left, uint right)
 {
+	//w = bitand( bitshift(w, -1), uint32(1431655765)) + bitand(w, uint32(1431655765));
+	//w = bitand(bitshift(w, -2), uint32(858993459)) + bitand(w, uint32(858993459));
+	//w = bitand(bitshift(w, -4), uint32(252645135)) + bitand(w, uint32(252645135));
+	//w = bitand(bitshift(w, -8), uint32(16711935)) + bitand(w, uint32(16711935));
+	//w = bitand(bitshift(w, -16), uint32(65535)) + bitand(w, uint32(65535));
+
 	uint distance = left ^ right;
 	distance = ((distance >> 1) & 1431655765U) + (distance & 1431655765U);
 	distance = ((distance >> 2) & 858993459U) + (distance & 858993459U);
