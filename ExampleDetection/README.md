@@ -50,3 +50,4 @@ C:\Install\ffmpeg\ffmpeg-5.0.1-full_build\bin\ffmpeg ^
 -c:v nul ^
 discovery_theme_01.wav
 ```
+You can just play this then to make sure it is what you expected.
