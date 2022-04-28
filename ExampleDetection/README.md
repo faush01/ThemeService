@@ -1,4 +1,4 @@
-# ThemeServiceWebSite
+# Intro theme detection using hamming distance on bit streams 
 
 Example app to detect a theme Chromaprint in a larger Chromaprint of the first 15 min of a TV Show Episode.
 
