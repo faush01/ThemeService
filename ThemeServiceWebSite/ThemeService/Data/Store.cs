@@ -91,10 +91,65 @@ namespace ThemeService.Data
             return user;
         }
 
-        public List<ThemeData> GetThemeDataList()
+        public List<ThemeData> GetThemeDataList(ThemeQueryOptions options)
         {
-            List<ThemeData> theme_data = new List<ThemeData>();
-            string sql = "SELECT id, imdb, themoviedb, thetvdb, season, episode, description, added_by, added_date, theme_cp_data_size, theme_cp_data_md5 FROM theme_data;";
+            List<ThemeData> theme_data_list = new List<ThemeData>();
+
+            // build select
+            List<string> fields = new List<string>()
+                {
+                    "id",
+                    "imdb",
+                    "themoviedb",
+                    "thetvdb",
+                    "season",
+                    "episode",
+                    "description",
+                    "added_by",
+                    "added_date",
+                    "theme_cp_data_size",
+                    "theme_cp_data_md5"
+                };
+
+            if(options.CpData)
+            {
+                fields.Add("theme_cp_data");
+            }
+
+            // build where
+            List<string> where_clause = new List<string>();
+            if(options.Id.Count > 0)
+            {
+                where_clause.Add("id IN (" + string.Join(",", options.Id) + ")");
+            }
+            if(options.Imdb.Count > 0)
+            {
+                List<string> imdb_list = new List<string>();
+                foreach (string imbd in options.Imdb) // build the string list and escape any ' chars
+                {
+                    imdb_list.Add("'" + imbd.Replace("'", "''") + "'");
+                }
+                where_clause.Add("imdb IN (" + string.Join(",", imdb_list) + ")");
+            }
+
+
+            // this is to allow fast lookup of field indexes
+            Dictionary<string, int> filed_ids = new Dictionary<string, int>();
+            for (int index = 0; index < fields.Count; index++)
+            {
+                filed_ids.Add(fields[index], index);
+            }
+
+            string sql = "SELECT " + string.Join(",", fields) + " ";
+            sql += "FROM theme_data";
+
+            // add the where clause
+            if(where_clause.Count > 0)
+            {
+                sql += " WHERE " + string.Join(" AND ", where_clause);
+            }
+
+            // do query
             using (SqlConnection sql_conn = new SqlConnection(GetConnectionString()))
             {
                 sql_conn.Open();
@@ -105,67 +160,30 @@ namespace ThemeService.Data
                         while (reader.Read())
                         {
                             ThemeData data = new ThemeData();
-                            data.id = reader.GetInt32(0);
-                            data.imdb = reader.GetString(1);
-                            data.thetvdb = reader.GetString(2);
-                            data.themoviedb = reader.GetString(3);
-                            data.season = reader.GetInt32(4);
-                            data.episode = reader.GetInt32(5);
-                            data.description = reader.GetString(6);
-                            data.added_by = reader.GetString(7);
-                            data.added_date = reader.GetDateTime(8);
-                            data.theme_cp_data_size = reader.GetInt32(9);
-                            data.theme_cp_data_md5 = reader.GetString(10);
-                            theme_data.Add(data);
-                            //image_data = (byte[])reader[1];
+
+                            data.id = reader.GetInt32(filed_ids["id"]);
+                            data.imdb = reader.GetString(filed_ids["imdb"]);
+                            data.thetvdb = reader.GetString(filed_ids["thetvdb"]);
+                            data.themoviedb = reader.GetString(filed_ids["themoviedb"]);
+                            data.season = reader.GetInt32(filed_ids["season"]);
+                            data.episode = reader.GetInt32(filed_ids["episode"]);
+                            data.description = reader.GetString(filed_ids["description"]);
+                            data.added_by = reader.GetString(filed_ids["added_by"]);
+                            data.added_date = reader.GetDateTime(filed_ids["added_date"]);
+                            data.theme_cp_data_size = reader.GetInt32(filed_ids["theme_cp_data_size"]);
+                            data.theme_cp_data_md5 = reader.GetString(filed_ids["theme_cp_data_md5"]);
+
+                            if (options.CpData)
+                            {
+                                data.theme_cp_data = reader.GetString(filed_ids["theme_cp_data"]);
+                            }
+
+                            theme_data_list.Add(data);
                         }
                     }
                 }
             }
-            return theme_data;
-        }
-
-        public ThemeData GetThemeData(int id)
-		{
-            string sql = "SELECT id, imdb, themoviedb, thetvdb, season, episode, description, added_by, " +
-                "added_date, theme_cp_data_size, theme_cp_data_md5, theme_cp_data FROM theme_data WHERE id = " + id;
-            ThemeData theme_data = null;
-            using (SqlConnection sql_conn = new SqlConnection(GetConnectionString()))
-            {
-                sql_conn.Open();
-                using (SqlCommand command = new SqlCommand(sql, sql_conn))
-                {
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        if (reader.HasRows)
-                        {
-                            reader.Read();
-                            theme_data = new ThemeData();
-
-                            theme_data.id = reader.GetInt32(0);
-                            theme_data.imdb = reader.GetString(1);
-                            theme_data.themoviedb = reader.GetString(2);
-                            theme_data.thetvdb = reader.GetString(3);
-
-                            theme_data.season = reader.GetInt32(4);
-                            theme_data.episode = reader.GetInt32(5);
-
-                            theme_data.description = reader.GetString(6);
-                            theme_data.added_by = reader.GetString(7);
-                            theme_data.added_date = reader.GetDateTime(8);
-                            theme_data.theme_cp_data_size = reader.GetInt32(9);
-                            theme_data.theme_cp_data_md5 = reader.GetString(10);
-                            theme_data.theme_cp_data = reader.GetString(11);
-
-                            //if (!reader.IsDBNull(3))
-                            //{
-                            //    user.last_login = reader.GetDateTime(3);
-                            //}
-                        }
-                    }
-                }
-            }
-            return theme_data;
+            return theme_data_list;
         }
 
         public void DeleteTheme(int id)
@@ -176,6 +194,33 @@ namespace ThemeService.Data
                 sql_conn.Open();
                 using (SqlCommand command = new SqlCommand(sql, sql_conn))
                 {
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void UpdateTheme(ThemeData theme_data)
+        {
+            string sql = "UPDATE theme_data SET " +
+                "imdb=@imdb, " +
+                "themoviedb=@themoviedb, " +
+                "thetvdb=@thetvdb, " +
+                "season=@season, " +
+                "episode=@episode, " +
+                "description=@description " +
+                "WHERE id=@id";
+            using (SqlConnection sql_conn = new SqlConnection(GetConnectionString()))
+            {
+                sql_conn.Open();
+                using (SqlCommand command = new SqlCommand(sql, sql_conn))
+                {
+                    command.Parameters.AddWithValue("id", theme_data.id);
+                    command.Parameters.AddWithValue("imdb", theme_data.imdb);
+                    command.Parameters.AddWithValue("themoviedb", theme_data.themoviedb);
+                    command.Parameters.AddWithValue("thetvdb", theme_data.thetvdb);
+                    command.Parameters.AddWithValue("season", theme_data.season);
+                    command.Parameters.AddWithValue("episode", theme_data.episode);
+                    command.Parameters.AddWithValue("description", theme_data.description);
                     command.ExecuteNonQuery();
                 }
             }

@@ -25,7 +25,12 @@ namespace ThemeService.Controllers
             ViewData["user_info"] = user_info;
 
             Store store = new Store(_config);
-            List<ThemeData> theme_list = store.GetThemeDataList();
+
+            ThemeQueryOptions options = new ThemeQueryOptions();
+            options.CpData = false;
+
+            List<ThemeData> theme_list = store.GetThemeDataList(options);
+
             ViewData["theme_list"] = theme_list;
 
             return View();
@@ -51,7 +56,19 @@ namespace ThemeService.Controllers
             ViewData["user_info"] = user_info;
 
             Store store = new Store(_config);
-            ThemeData theme_data = store.GetThemeData(id);
+            
+            ThemeQueryOptions options = new ThemeQueryOptions();
+            options.CpData = true;
+            options.Id.Add(id);
+
+            List<ThemeData> theme_list = store.GetThemeDataList(options);
+
+            ThemeData theme_data = null;
+            if(theme_list.Count > 0)
+            {
+                theme_data = theme_list[0];
+            }
+
             ViewData["theme_data"] = theme_data;
             return View();
         }
@@ -67,7 +84,18 @@ namespace ThemeService.Controllers
             }
 
             Store store = new Store(_config);
-            ThemeData theme = store.GetThemeData(id);
+
+            ThemeQueryOptions options = new ThemeQueryOptions();
+            options.CpData = false;
+            options.Id.Add(id);
+            List<ThemeData> theme_list = store.GetThemeDataList(options);
+
+            ThemeData theme = null;
+            if(theme_list.Count > 0)
+            {
+                theme = theme_list[0];
+            }
+
             if(theme != null)
 			{
                 if(theme.added_by == user_info.username)
@@ -147,6 +175,55 @@ namespace ThemeService.Controllers
             int id = store.SaveThemeData(theme);
 
             return RedirectToAction("ShowItemInfo", "Home", new { id = id });
+        }
+
+        public IActionResult UpdateTheme(IFormCollection form_data)
+		{
+            UserInfo user_info = Utils.SessionData.GetActiveUser(HttpContext);
+            if (user_info == null)
+            {
+                string referer = Url.Action("AddTheme", "Home");
+                HttpContext.Session.SetString("login_referer", referer);
+                return RedirectToAction("Index", "Login");
+            }
+            ViewData["user_info"] = user_info;
+
+            int theme_id = int.Parse(form_data["id"]);
+            string imdb = form_data["imdb"];
+            string themoviedb = form_data["themoviedb"];
+            string thetvdb = form_data["thetvdb"];
+
+            string season = form_data["season"];
+            string episode = form_data["episode"];
+            string description = form_data["description"];
+
+            Store store = new Store(_config);
+            ThemeQueryOptions options = new ThemeQueryOptions();
+            options.Id.Add(theme_id);
+            List<ThemeData> theme_list = store.GetThemeDataList(options);
+
+            if(theme_list.Count == 0)
+			{
+                return RedirectToAction("Index", "Home");
+            }
+
+            ThemeData theme = theme_list[0];
+
+            if(theme.added_by != user_info.username)
+			{
+                return RedirectToAction("ShowItemInfo", "Home", new { id = theme.id });
+            }
+
+            theme.imdb = imdb;
+            theme.themoviedb = themoviedb;
+            theme.thetvdb = thetvdb;
+            theme.season = int.Parse(season);
+            theme.episode = int.Parse(episode);
+            theme.description = description;
+
+            store.UpdateTheme(theme);
+
+            return RedirectToAction("ShowItemInfo", "Home", new { id = theme.id });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

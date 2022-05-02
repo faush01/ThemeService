@@ -1,0 +1,28 @@
+﻿@{
+}
+
+Api Usage:
+<pre>
+/Api
+
+Returns all the chromaprint items by default.
+
+Parameters:
+
+data=true|false
+id=1,2,3
+imdb=id01,id02
+
+Examples:
+
+Return just one item, no chromaprint data, just the item info
+/Api?id=10034
+
+Return all items (no chromaprint data) with imdb id tt11828 or tt13422
+/Api?imdb=tt11828,tt13422
+
+Return an item with chromaprint data
+/Api?id=10034&data=true
+
+
+</pre>
