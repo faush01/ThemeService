@@ -45,11 +45,10 @@ byte[] GetChromaprintData(TimeSpan ts_start, TimeSpan ts_end)
 
 	ProcessStartInfo start_info = new ProcessStartInfo(ffmpeg_path, param_string);
 	start_info.RedirectStandardOutput = true;
-	start_info.RedirectStandardError = true;
+	start_info.RedirectStandardError = false;
 	start_info.UseShellExecute = false;
 	start_info.CreateNoWindow = true;
 
-	List<byte> output = new List<byte>();
 	byte[] chroma_bytes = new byte[0];
 	int return_code = -1;
 	using (Process process = new Process(){StartInfo = start_info})
