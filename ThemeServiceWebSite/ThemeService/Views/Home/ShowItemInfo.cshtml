@@ -119,6 +119,19 @@ function submit_form() {
 		</td>
 	</tr>
 	<tr>
+		<td>extract length</td>
+		<td>
+			@if(admin)
+			{	
+				<input type="text" name="extract_length" value="@theme_data.extract_length" />
+			}
+			else
+			{
+				@theme_data.extract_length
+			}
+		</td>
+	</tr>
+	<tr>
 		<td>description</td>
 		<td>
 			@if(admin)

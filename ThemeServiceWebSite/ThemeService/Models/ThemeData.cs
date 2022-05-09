@@ -8,6 +8,7 @@
 		public string thetvdb { get; set; }
 		public int season { get; set; }
 		public int episode { get; set; }
+		public int extract_length { get; set; }
 		public string description { get; set; }
 		public string added_by { get; set; }
 		public DateTime added_date { get; set; }

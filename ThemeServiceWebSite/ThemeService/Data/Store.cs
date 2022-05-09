@@ -104,6 +104,7 @@ namespace ThemeService.Data
                     "thetvdb",
                     "season",
                     "episode",
+                    "extract_length",
                     "description",
                     "added_by",
                     "added_date",
@@ -167,6 +168,7 @@ namespace ThemeService.Data
                             data.themoviedb = reader.GetString(filed_ids["themoviedb"]);
                             data.season = reader.GetInt32(filed_ids["season"]);
                             data.episode = reader.GetInt32(filed_ids["episode"]);
+                            data.extract_length = reader.GetInt32(filed_ids["extract_length"]);
                             data.description = reader.GetString(filed_ids["description"]);
                             data.added_by = reader.GetString(filed_ids["added_by"]);
                             data.added_date = reader.GetDateTime(filed_ids["added_date"]);
@@ -207,6 +209,7 @@ namespace ThemeService.Data
                 "thetvdb=@thetvdb, " +
                 "season=@season, " +
                 "episode=@episode, " +
+                "extract_length=@extract_length, " +
                 "description=@description " +
                 "WHERE id=@id";
             using (SqlConnection sql_conn = new SqlConnection(GetConnectionString()))
@@ -219,6 +222,7 @@ namespace ThemeService.Data
                     command.Parameters.AddWithValue("themoviedb", theme_data.themoviedb);
                     command.Parameters.AddWithValue("thetvdb", theme_data.thetvdb);
                     command.Parameters.AddWithValue("season", theme_data.season);
+                    command.Parameters.AddWithValue("extract_length", theme_data.extract_length);
                     command.Parameters.AddWithValue("episode", theme_data.episode);
                     command.Parameters.AddWithValue("description", theme_data.description);
                     command.ExecuteNonQuery();
@@ -229,8 +233,8 @@ namespace ThemeService.Data
         public int SaveThemeData(ThemeData theme_data)
         {
             string sql = "INSERT INTO theme_data " +
-                "(imdb, themoviedb, thetvdb, season, episode, description, added_by, theme_cp_data_size, theme_cp_data_md5, theme_cp_data) " +
-                "VALUES(@imdb, @themoviedb, @thetvdb, @season, @episode, @description, @added_by, @theme_cp_data_size, @theme_cp_data_md5, @theme_cp_data);";
+                "(imdb, themoviedb, thetvdb, season, episode, extract_length, description, added_by, theme_cp_data_size, theme_cp_data_md5, theme_cp_data) " +
+                "VALUES(@imdb, @themoviedb, @thetvdb, @season, @episode, @extract_length, @description, @added_by, @theme_cp_data_size, @theme_cp_data_md5, @theme_cp_data);";
 
             using (SqlConnection sql_conn = new SqlConnection(GetConnectionString()))
             {
@@ -257,6 +261,7 @@ namespace ThemeService.Data
                     command.Parameters.AddWithValue("thetvdb", theme_data.thetvdb);
                     command.Parameters.AddWithValue("season", theme_data.season);
                     command.Parameters.AddWithValue("episode", theme_data.episode);
+                    command.Parameters.AddWithValue("extract_length", theme_data.extract_length);
                     command.Parameters.AddWithValue("description", theme_data.description);
                     command.Parameters.AddWithValue("added_by", theme_data.added_by);
                     command.Parameters.AddWithValue("theme_cp_data_size", theme_data.theme_cp_data_size);

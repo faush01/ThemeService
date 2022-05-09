@@ -9,6 +9,7 @@ CREATE TABLE theme_data
    thetvdb varchar(256) DEFAULT '' NOT NULL,
    season int DEFAULT -1 NOT NULL,
    episode int DEFAULT -1 NOT NULL,
+   extract_length int DEFAULT -1 NOT NULL,
    description varchar(256) DEFAULT '' NOT NULL,
    added_by varchar(256) DEFAULT '' NOT NULL,
    added_date DateTime DEFAULT GETDATE() NOT NULL,

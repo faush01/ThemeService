@@ -143,6 +143,14 @@ namespace ThemeService.Controllers
             catch(Exception ex) { }
             theme.episode = episode;
 
+            int extract_length = -1;
+            try
+            {
+                extract_length = int.Parse(form_data["extract_length"]);
+            }
+            catch (Exception ex) { }
+            theme.extract_length = extract_length;
+
             theme.description = form_data["description"];
             theme.added_by = user_info.username;
 
@@ -195,6 +203,7 @@ namespace ThemeService.Controllers
 
             string season = form_data["season"];
             string episode = form_data["episode"];
+            string extract_length = form_data["extract_length"];
             string description = form_data["description"];
 
             Store store = new Store(_config);
@@ -214,12 +223,13 @@ namespace ThemeService.Controllers
                 return RedirectToAction("ShowItemInfo", "Home", new { id = theme.id });
             }
 
-            theme.imdb = imdb;
-            theme.themoviedb = themoviedb;
-            theme.thetvdb = thetvdb;
-            theme.season = int.Parse(season);
-            theme.episode = int.Parse(episode);
-            theme.description = description;
+            theme.imdb = imdb.Trim();
+            theme.themoviedb = themoviedb.Trim();
+            theme.thetvdb = thetvdb.Trim();
+            theme.season = int.Parse(season.Trim());
+            theme.episode = int.Parse(episode.Trim());
+            theme.extract_length = int.Parse(extract_length.Trim());
+            theme.description = description.Trim();
 
             store.UpdateTheme(theme);
 
