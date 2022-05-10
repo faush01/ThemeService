@@ -1,0 +1,12 @@
+# ide ignore
+.vs
+*.user
+
+# project ignore
+PublishProfiles
+ServiceDependencies
+config_dev.txt
+
+# build ignore
+bin/
+obj/

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "EmbyClient": {
+      "commandName": "Project",
+      "commandLineArgs": "\"..\\..\\..\\config_dev.txt\""
+    }
+  }
+}
