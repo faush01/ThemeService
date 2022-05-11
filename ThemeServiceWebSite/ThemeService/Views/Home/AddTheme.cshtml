@@ -48,6 +48,41 @@
 		</tr>
 
 	</table>
+	
+	<br />
+
+	<h4>Creating theme intro chromaprint files</h4>
+
+<div>To create the chromaprint bin file to submit use ffmpeg.</div>
+<div>The following will extract an audio chromaprint from 6:10 to 7:20 of the input video and save the raw data to a file that can be submitted in the above form.</div>
+<br />
+<pre>
+ffmpeg
+-i "path to episode video file"
+-ss 00:06:10
+-t 00:01:10
+-ac 1
+-acodec pcm_s16le
+-ar 16000
+-c:v nul
+-f chromaprint
+-fp_format raw
+"path to output chromaprint file.bin"
+</pre>
+<br />
+<div>To verify you have the correct segment of audio which includes just the intro theme music in your chromaprint you can use the following that will just save the audio as a wav file so you can play it back and verify it is the correct time segment.</div>
+<br />
+<pre>
+ffmpeg
+-i "path to episode video file"
+-ss 00:06:10
+-t 00:01:10
+-ac 1
+-acodec pcm_s16le
+-ar 16000
+-c:v nul
+"path to output wav file.wav"
+</pre>
 
 </form>
 
