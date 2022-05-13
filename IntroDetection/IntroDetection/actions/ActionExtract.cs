@@ -17,6 +17,19 @@ namespace IntroDetection
 
 		public byte[] ExtractChromaprintData(string input_file, TimeSpan ts_start, TimeSpan ts_end)
 		{
+			if (string.IsNullOrEmpty(input_file))
+			{
+				Console.WriteLine("Input filename is empty");
+				return new byte[0];
+			}
+
+			FileInfo input_file_info = new FileInfo(input_file);
+			if (!input_file_info.Exists)
+			{
+				Console.WriteLine("Input file does not exist : " + input_file);
+				return new byte[0];
+			}
+
 			Stopwatch sw = new Stopwatch();
 			sw.Start();
 			string ffmpeg_path = config.Get("ffmpeg_path");
@@ -27,13 +40,6 @@ namespace IntroDetection
 			if (ts_start.TotalSeconds != 0)
 			{
 				command_params.Add(string.Format("-ss {0}", ts_start));
-			}
-
-			FileInfo input_file_info = new FileInfo(input_file);
-			if(!input_file_info.Exists)
-            {
-				Console.WriteLine("Input file does not exist : " + input_file);
-				return new byte[0];
 			}
 
 			//string output_file = @"C:\Development\IntroSkip\ffmpeg\temp.bin";

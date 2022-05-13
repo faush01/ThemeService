@@ -80,7 +80,7 @@ namespace IntroDetection
 
 			if(min_dist > distance_threshold)
             {
-				Console.WriteLine("Min distance  was not below average distance threshold!");
+				Console.WriteLine("Min distance was not below average distance threshold!");
 				return null;
             }
 
