@@ -3,7 +3,6 @@
 *.user
 
 # project ignore
-PublishProfiles
 ServiceDependencies
 config_dev.txt
 

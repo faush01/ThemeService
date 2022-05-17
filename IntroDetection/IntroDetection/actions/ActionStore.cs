@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,9 +17,9 @@ namespace IntroDetection
             config = conf;
         }
 
-        public EmbyItem? LoadEpisodeData(EmbyItem item)
+        public EmbyItem LoadEpisodeData(EmbyItem item)
         {
-            string? item_path = GetItemPath(item, false);
+            string item_path = GetItemPath(item, false);
 
             if(item_path == null)
             {
@@ -32,19 +33,19 @@ namespace IntroDetection
             }
 
             string item_data = File.ReadAllText(item_path);
-            EmbyItem? new_emby_item = JsonConvert.DeserializeObject<EmbyItem>(item_data);
+            EmbyItem new_emby_item = JsonConvert.DeserializeObject<EmbyItem>(item_data);
 
             return new_emby_item;
         }
 
         public void SaveEpisodeData(EmbyItem item)
         {
-            string? item_path = GetItemPath(item, true);
+            string item_path = GetItemPath(item, true);
             string item_data = JsonConvert.SerializeObject(item, Formatting.Indented);
             File.WriteAllText(item_path, item_data);
         }
 
-        private string? GetItemPath(EmbyItem item, bool create)
+        private string GetItemPath(EmbyItem item, bool create)
         {
             string store_base = config.Get("store_path");
             string item_path = Path.Combine(store_base, string.Format(@"{0:D3}", item.SeriesId)); 

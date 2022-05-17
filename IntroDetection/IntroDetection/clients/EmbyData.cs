@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,8 +10,8 @@ namespace IntroDetection
 {
     public class EmbyData
     {
-        private HttpClient? http_client = null;
-        private Config? config = null;
+        private HttpClient http_client = null;
+        private Config config = null;
 
         public EmbyData(HttpClient cli, Config con)
         {
@@ -18,7 +19,7 @@ namespace IntroDetection
             config = con;
         }
 
-        public async Task<EmbyResult?> GetSeriesList()
+        public async Task<EmbyResult> GetSeriesList()
         {
             string series_url = "/emby/Items" +
                 "?IncludeItemTypes=Series" +
@@ -31,7 +32,7 @@ namespace IntroDetection
             HttpResponseMessage response = await http_client.GetAsync(request_url);
 
             int rc = (int)response.StatusCode;
-            EmbyResult? series_data = null;
+            EmbyResult series_data = null;
             if (rc == 200)
             {
                 string response_body = await response.Content.ReadAsStringAsync();
@@ -54,7 +55,7 @@ namespace IntroDetection
             return series_data;
         }
 
-        public async Task<EmbyResult?> GetEpisodeList(long series_id)
+        public async Task<EmbyResult> GetEpisodeList(long series_id)
         {
             string episode_url = "/emby/Items" +
                 "?IncludeItemTypes=Episode" +
@@ -69,7 +70,7 @@ namespace IntroDetection
             HttpResponseMessage response = await http_client.GetAsync(request_url);
 
             int rc = (int)response.StatusCode;
-            EmbyResult? eposide_data = null;
+            EmbyResult eposide_data = null;
             if (rc == 200)
             {
                 string response_body = await response.Content.ReadAsStringAsync();

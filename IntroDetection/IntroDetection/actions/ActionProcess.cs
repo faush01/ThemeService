@@ -1,7 +1,7 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace IntroDetection
@@ -48,7 +48,7 @@ namespace IntroDetection
             // check to see if we have theme start/end data already for this episode
 
             // do check
-            EmbyItem? existing_item = item_store.LoadEpisodeData(item);
+            EmbyItem existing_item = item_store.LoadEpisodeData(item);
             if(existing_item != null)
             {
                 Console.WriteLine("Episode already processed");
@@ -125,10 +125,10 @@ namespace IntroDetection
             // get all the emby data and theme service data and try to match theme intros with episodes
 
             EmbyData emby_data = new EmbyData(http_client, config);
-            EmbyResult? series_list = await emby_data.GetSeriesList();
+            EmbyResult series_list = await emby_data.GetSeriesList();
 
             ThemeData theme_data = new ThemeData(http_client, config);
-            List<ThemeInfo>? theme_info = await theme_data.GetThemeList();
+            List<ThemeInfo> theme_info = await theme_data.GetThemeList();
 
             Dictionary<string, List<ThemeInfo>> theme_dict = new Dictionary<string, List<ThemeInfo>>();
             foreach (ThemeInfo theme in theme_info)
