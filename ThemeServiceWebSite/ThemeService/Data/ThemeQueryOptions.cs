@@ -1,4 +1,6 @@
-﻿namespace ThemeService.Data
+﻿using System.Collections.Generic;
+
+namespace ThemeService.Data
 {
     public class ThemeQueryOptions
     {

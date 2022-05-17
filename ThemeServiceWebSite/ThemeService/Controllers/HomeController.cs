@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Diagnostics;
+using System.IO;
 using System.Security.Cryptography;
 using ThemeService.Data;
 using ThemeService.Models;
@@ -133,14 +137,14 @@ namespace ThemeService.Controllers
             {
                 season = int.Parse(form_data["season"]);
             }
-            catch (Exception ex) { }
+            catch (Exception) { }
             theme.season = season;
             int episode = -1;
             try
             {
                 episode = int.Parse(form_data["episode"]);
             }
-            catch(Exception ex) { }
+            catch(Exception) { }
             theme.episode = episode;
 
             int extract_length = -1;
@@ -148,7 +152,7 @@ namespace ThemeService.Controllers
             {
                 extract_length = int.Parse(form_data["extract_length"]);
             }
-            catch (Exception ex) { }
+            catch (Exception) { }
             theme.extract_length = extract_length;
 
             theme.description = form_data["description"];
@@ -173,7 +177,8 @@ namespace ThemeService.Controllers
                 using (MD5 md5 = MD5.Create())
                 {
                     byte[] hashBytes = md5.ComputeHash(cp_bytes);
-                    theme.theme_cp_data_md5 = Convert.ToHexString(hashBytes);
+                    //theme.theme_cp_data_md5 = Convert.ToHexString(hashBytes);
+                    theme.theme_cp_data_md5 = BitConverter.ToString(hashBytes).Replace("-", "").ToUpper();
                 }
                 theme.theme_cp_data = Convert.ToBase64String(cp_bytes);
             }

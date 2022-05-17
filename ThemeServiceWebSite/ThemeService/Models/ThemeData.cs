@@ -1,4 +1,6 @@
-﻿namespace ThemeService.Models
+﻿using System;
+
+namespace ThemeService.Models
 {
 	public class ThemeData
 	{

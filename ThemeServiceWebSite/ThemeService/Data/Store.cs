@@ -1,4 +1,6 @@
-﻿using System.Data;
+﻿using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Reflection.Metadata.Ecma335;
 using ThemeService.Models;

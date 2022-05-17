@@ -1,5 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using ThemeService.Data;
 using ThemeService.Models;
@@ -31,7 +36,8 @@ namespace ThemeService.Controllers
             {
                 byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(password);
                 byte[] hashBytes = md5.ComputeHash(inputBytes);
-                return Convert.ToHexString(hashBytes);
+                //return Convert.ToHexString(hashBytes);
+                return BitConverter.ToString(hashBytes).Replace("-", "").ToUpper();
             }
         }
 
