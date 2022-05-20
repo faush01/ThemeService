@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -20,6 +21,21 @@ namespace IntroDetection
         }
 
         public async Task<List<ThemeInfo>> GetThemeList()
+        {
+            string theme_source = config.Get("theme_server");
+            if(theme_source.StartsWith("http", StringComparison.CurrentCultureIgnoreCase))
+            {
+                Console.WriteLine("Loading theme list from API : " + theme_source);
+                return await LoadListFromApi();
+            }
+            else
+            {
+                Console.WriteLine("Loading theme list from file : " + theme_source);
+                return LoadListFromFile(theme_source);
+            }
+        }
+
+        private async Task<List<ThemeInfo>> LoadListFromApi()
         {
             string themes_url = "/Api";//?data=true";
 
@@ -46,6 +62,21 @@ namespace IntroDetection
 
         public async Task<List<ThemeInfo>> GetThemeData(HashSet<int?> ids)
         {
+            string theme_source = config.Get("theme_server");
+            if (theme_source.StartsWith("http", StringComparison.CurrentCultureIgnoreCase))
+            {
+                Console.WriteLine("Loading theme data from API : " + theme_source);
+                return await GetThemeDataFromApi(ids);
+            }
+            else
+            {
+                Console.WriteLine("Loading theme data from file : " + theme_source);
+                return LoadListFromFile(theme_source);
+            }
+        }
+
+        public async Task<List<ThemeInfo>> GetThemeDataFromApi(HashSet<int?> ids)
+        {
             string themes_url = "/Api?data=true&id=" + String.Join(",", ids);
 
             string request_url = config.Get("theme_server") + themes_url;
@@ -67,6 +98,40 @@ namespace IntroDetection
             }
 
             return theme_data;
+        }
+
+        private List<ThemeInfo> LoadListFromFile(string file_name)
+        {
+            List<ThemeInfo> themes = new List<ThemeInfo>();
+            using(FileStream fs = new FileStream(file_name, FileMode.Open))
+            {
+                using (StreamReader sr = new StreamReader(fs))
+                {
+                    string line = sr.ReadLine();
+                    int line_id = 0;
+                    while(line != null)
+                    {
+                        string[] token = line.Split("\t");
+
+                        ThemeInfo info = new ThemeInfo();
+                        info.id = line_id;
+                        info.imdb = token[0];
+                        info.themoviedb = token[1];
+                        info.thetvdb = token[2];
+                        info.season = int.Parse(token[3]);
+                        info.episode = int.Parse(token[4]);
+                        info.extract_length = int.Parse(token[5]);
+                        info.description = token[6];
+                        info.theme_cp_data = token[7];
+
+                        themes.Add(info);
+                        line_id++;
+                        line = sr.ReadLine();
+                    }
+                }
+            }
+
+            return themes;
         }
     }
 }
