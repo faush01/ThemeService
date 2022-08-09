@@ -29,8 +29,8 @@ byte[] GetChromaprintData(TimeSpan ts_start, TimeSpan ts_end)
 		command_params.Add(string.Format("-ss {0}", ts_start));
     }
 
-	command_params.Add(string.Format("-t {0}", ts_duration));
 	command_params.Add("-i \"" + input_file + "\"");
+	command_params.Add(string.Format("-t {0}", ts_duration));
 	command_params.Add("-ac 1");
 	command_params.Add("-acodec pcm_s16le");
 	command_params.Add("-ar 16000");

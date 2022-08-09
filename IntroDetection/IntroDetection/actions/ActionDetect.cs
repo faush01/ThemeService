@@ -14,9 +14,9 @@ namespace IntroDetection
             config = con;
         }
 
-		public bool FindBestOffset(byte[] episode_cop_buytes, byte[] theme_cp_bytes, EmbyItem item)
+		public bool FindBestOffset(byte[] episode_cp_bytes, byte[] theme_cp_bytes, EmbyItem item)
         {
-			List<uint> episode_cp_uints = BytesToInts(episode_cop_buytes);
+			List<uint> episode_cp_uints = BytesToInts(episode_cp_bytes);
 			List<uint> theme_cp_uints = BytesToInts(theme_cp_bytes);
 
 			if(episode_cp_uints.Count == 0 || theme_cp_uints.Count == 0 || theme_cp_uints.Count > episode_cp_uints.Count)
