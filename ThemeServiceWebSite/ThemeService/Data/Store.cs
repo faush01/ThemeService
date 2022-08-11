@@ -30,69 +30,6 @@ namespace ThemeService.Data
             return ms_conn_str;
         }
 
-        public bool AddUser(UserInfo new_user)
-        {
-            string sql = "INSERT INTO users (username, password) VALUES (@username, @password)";
-            using (SqlConnection sql_conn = new SqlConnection(GetConnectionString()))
-            {
-                sql_conn.Open();
-                using (SqlCommand command = new SqlCommand(sql, sql_conn))
-                {
-                    command.Parameters.AddWithValue("username", new_user.username);
-                    command.Parameters.AddWithValue("password", new_user.password);
-                    command.ExecuteNonQuery();
-                }
-            }
-
-            return true;
-        }
-
-        public void UpdateLastLoginDate(UserInfo user)
-        {
-            string sql = "UPDATE users SET lastlogin = GETDATE() WHERE username = @username";
-            using (SqlConnection sql_conn = new SqlConnection(GetConnectionString()))
-            {
-                sql_conn.Open();
-                using (SqlCommand command = new SqlCommand(sql, sql_conn))
-                {
-                    command.Parameters.AddWithValue("username", user.username);
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
-
-        public UserInfo GetUserInfo(string username)
-        {
-            string sql = "SELECT id, username, password, lastlogin, access FROM users WHERE username = @username";
-            UserInfo user = null;
-            using (SqlConnection sql_conn = new SqlConnection(GetConnectionString()))
-            {
-                sql_conn.Open();
-                using (SqlCommand command = new SqlCommand(sql, sql_conn))
-                {
-                    command.Parameters.AddWithValue("username", username);
-
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        if (reader.HasRows)
-                        {
-                            reader.Read();
-                            user = new UserInfo();
-                            user.id = reader.GetInt32(0);
-                            user.username = reader.GetString(1);
-                            user.password = reader.GetString(2);
-                            if (!reader.IsDBNull(3))
-                            {
-                                user.last_login = reader.GetDateTime(3);
-                            }
-                            user.access = reader.GetInt32(4);
-                        }
-                    }
-                }
-            }
-            return user;
-        }
-
         public List<ThemeData> GetThemeDataList(ThemeQueryOptions options)
         {
             List<ThemeData> theme_data_list = new List<ThemeData>();

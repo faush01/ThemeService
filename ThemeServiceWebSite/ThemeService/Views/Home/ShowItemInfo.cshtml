@@ -4,16 +4,12 @@
 	{
 		theme_data = new ThemeData();
 	}
-	UserInfo user_info = (UserInfo)ViewData["user_info"];
-	if (user_info == null)
-	{
-		user_info = new UserInfo();
-	}
+	GitHubUser user_info = (GitHubUser)ViewData["user_info"];
 
 	bool admin = false;
-	if(	!string.IsNullOrEmpty(user_info.username) && 
+	if(	!string.IsNullOrEmpty(user_info.LoginId) && 
 		!string.IsNullOrEmpty(theme_data.added_by) && 
-		user_info.username == theme_data.added_by)
+		user_info.LoginId == theme_data.added_by)
 	{
 		admin = true;
 	}

@@ -29,21 +29,3 @@ INSERT INTO theme_data (imdb, themoviedb, thetvdb, description, theme_cp_data, a
 VALUES ('tt5171438', '67198', '328711', 'ST Discovery', 'some base64 data here', 'teamb');
 
 select * from theme_data;
-
--- create user table
-
-DROP TABLE users;
-CREATE TABLE users 
-( 
-   id int IDENTITY(1,1) NOT NULL,
-   username varchar(256),
-   password varchar(256),
-   access int DEFAULT -1 NOT NULL,
-   lastlogin datetime
-);
-ALTER TABLE users ADD CONSTRAINT pk_users_id PRIMARY KEY(id);
-
-INSERT INTO users (username, password) VALUES ('user01', 'password01');
-INSERT INTO users (username, password) VALUES ('user02', 'password02');
-
-SELECT * FROM users;

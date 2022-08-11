@@ -26,7 +26,7 @@ namespace ThemeService.Controllers
 
         public IActionResult Index()
         {
-            UserInfo user_info = Utils.SessionData.GetActiveUser(HttpContext);
+            GitHubUser user_info = Utils.UserDetails.GetUserInfo(User);
             ViewData["user_info"] = user_info;
 
             Store store = new Store(_config);
@@ -38,34 +38,15 @@ namespace ThemeService.Controllers
 
             ViewData["theme_list"] = theme_list;
 
-            if(User.Identity.IsAuthenticated)
-            {
-                string github_name = User.FindFirst(c => c.Type == ClaimTypes.Name)?.Value;
-                string github_login = User.FindFirst(c => c.Type == "urn:github:login")?.Value;
-                string github_url = User.FindFirst(c => c.Type == "urn:github:url")?.Value;
-                string github_avatar = User.FindFirst(c => c.Type == "urn:github:avatar")?.Value;
-
-                ViewData["github_name"] = github_name;
-                ViewData["github_login"] = github_login;
-                ViewData["github_url"] = github_url;
-                ViewData["github_avatar"] = github_avatar;
-            }
-            else
-            {
-                ViewData["github_name"] = "NONE";
-            }
-
             return View();
         }
 
         public IActionResult AddTheme()
         {
-            UserInfo user_info = Utils.SessionData.GetActiveUser(HttpContext);
-            if (user_info == null)
+            GitHubUser user_info = Utils.UserDetails.GetUserInfo(User);
+            if (user_info.IsAuthenticated == false)
             {
-                string referer = Url.Action("AddTheme", "Home");
-                HttpContext.Session.SetString("login_referer", referer);
-                return RedirectToAction("Index", "Login");
+                return RedirectToAction("Login", "Account");
             }
             ViewData["user_info"] = user_info;
 
@@ -74,7 +55,7 @@ namespace ThemeService.Controllers
 
         public IActionResult ShowItemInfo(int id)
 		{
-            UserInfo user_info = Utils.SessionData.GetActiveUser(HttpContext);
+            GitHubUser user_info = Utils.UserDetails.GetUserInfo(User);
             ViewData["user_info"] = user_info;
 
             Store store = new Store(_config);
@@ -97,12 +78,10 @@ namespace ThemeService.Controllers
 
         public IActionResult DeleteTheme(int id)
 		{
-            UserInfo user_info = Utils.SessionData.GetActiveUser(HttpContext);
-            if (user_info == null)
+            GitHubUser user_info = Utils.UserDetails.GetUserInfo(User);
+            if (user_info.IsAuthenticated == false)
             {
-                string referer = Url.Action("AddTheme", "Home");
-                HttpContext.Session.SetString("login_referer", referer);
-                return RedirectToAction("Index", "Login");
+                return RedirectToAction("Login", "Account");
             }
 
             Store store = new Store(_config);
@@ -120,7 +99,7 @@ namespace ThemeService.Controllers
 
             if(theme != null)
 			{
-                if(theme.added_by == user_info.username)
+                if(theme.added_by == user_info.LoginId)
                 {
                     store.DeleteTheme(id);
                 }
@@ -131,12 +110,10 @@ namespace ThemeService.Controllers
 
         public IActionResult AddNewTheme(IFormCollection form_data)
 		{
-            UserInfo user_info = Utils.SessionData.GetActiveUser(HttpContext);
-            if (user_info == null)
+            GitHubUser user_info = Utils.UserDetails.GetUserInfo(User);
+            if (user_info.IsAuthenticated == false)
             {
-                string referer = Url.Action("AddTheme", "Home");
-                HttpContext.Session.SetString("login_referer", referer);
-                return RedirectToAction("Index", "Login");
+                return RedirectToAction("Login", "Account");
             }
             ViewData["user_info"] = user_info;
 
@@ -174,7 +151,7 @@ namespace ThemeService.Controllers
             theme.extract_length = extract_length;
 
             theme.description = form_data["description"];
-            theme.added_by = user_info.username;
+            theme.added_by = user_info.LoginId;
 
             byte[] cp_bytes = null;
             if (form_data.Files.Count > 0)
@@ -210,12 +187,10 @@ namespace ThemeService.Controllers
 
         public IActionResult UpdateTheme(IFormCollection form_data)
 		{
-            UserInfo user_info = Utils.SessionData.GetActiveUser(HttpContext);
-            if (user_info == null)
+            GitHubUser user_info = Utils.UserDetails.GetUserInfo(User);
+            if (user_info.IsAuthenticated == false)
             {
-                string referer = Url.Action("AddTheme", "Home");
-                HttpContext.Session.SetString("login_referer", referer);
-                return RedirectToAction("Index", "Login");
+                return RedirectToAction("Login", "Account");
             }
             ViewData["user_info"] = user_info;
 
@@ -241,7 +216,7 @@ namespace ThemeService.Controllers
 
             ThemeData theme = theme_list[0];
 
-            if(theme.added_by != user_info.username)
+            if(theme.added_by != user_info.LoginId)
 			{
                 return RedirectToAction("ShowItemInfo", "Home", new { id = theme.id });
             }

@@ -1,9 +1,5 @@
 ﻿@{
-    UserInfo user_info = (UserInfo)ViewData["user_info"];
-    if (user_info == null)
-    {
-        user_info = new UserInfo();
-    }
+    GitHubUser user_info = (GitHubUser)ViewData["user_info"];
 }
 
 <!DOCTYPE html>
@@ -29,14 +25,19 @@
                 
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            @if(!string.IsNullOrEmpty(user_info.username))
+                            @if(user_info.IsAuthenticated)
                             {
-                                <a class="nav-link text-dark" title="Log Out" asp-area="" asp-controller="Login" asp-action="Logout">@user_info.username</a>
-
+                                <table>
+                                    <tr>
+                                        <td>@user_info.UserName </td>
+                                        <td> <img src="@user_info.AvatarUrl" width="35" height="35" /></td>
+                                        <td><a class="nav-link text-dark" title="Log Out" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a></td>
+                                    </tr>
+                                </table>
                             }
                             else
                             {
-                                <a class="nav-link text-dark" title="Log In" asp-area="" asp-controller="Login" asp-action="Index">Login</a>
+                                <a class="nav-link text-dark" title="Log In" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
                             }
                         </li>
                     </ul>
@@ -44,9 +45,6 @@
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="AddTheme">Add</a>
-                        </li>
-                        <li>
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Api" asp-action="Info">API</a>
                         </li>
                     </ul>
 
@@ -62,7 +60,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2022 - ThemeService (v0.2)
+            &copy; 2022 - ThemeService (v1.0)
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
