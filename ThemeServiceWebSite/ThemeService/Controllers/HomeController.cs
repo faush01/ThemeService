@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using ThemeService.Data;
 using ThemeService.Models;
@@ -36,6 +37,23 @@ namespace ThemeService.Controllers
             List<ThemeData> theme_list = store.GetThemeDataList(options);
 
             ViewData["theme_list"] = theme_list;
+
+            if(User.Identity.IsAuthenticated)
+            {
+                string github_name = User.FindFirst(c => c.Type == ClaimTypes.Name)?.Value;
+                string github_login = User.FindFirst(c => c.Type == "urn:github:login")?.Value;
+                string github_url = User.FindFirst(c => c.Type == "urn:github:url")?.Value;
+                string github_avatar = User.FindFirst(c => c.Type == "urn:github:avatar")?.Value;
+
+                ViewData["github_name"] = github_name;
+                ViewData["github_login"] = github_login;
+                ViewData["github_url"] = github_url;
+                ViewData["github_avatar"] = github_avatar;
+            }
+            else
+            {
+                ViewData["github_name"] = "NONE";
+            }
 
             return View();
         }
