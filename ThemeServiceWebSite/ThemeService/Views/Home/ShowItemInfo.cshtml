@@ -86,7 +86,19 @@ function submit_form() {
 				@theme_data.thetvdb
 			}
 		</td>
-	</td>
+	</tr>
+	<tr>
+		<td>series name</td>
+		<td>
+			@if(admin)
+			{	
+				<input type="text" name="series_name" value="@theme_data.series_name" />
+			}
+			else
+			{
+				@theme_data.series_name
+			}
+		</td>
 	</tr>
 	<tr>
 		<td>season</td>
@@ -128,25 +140,16 @@ function submit_form() {
 		</td>
 	</tr>
 	<tr>
-		<td>description</td>
-		<td>
-			@if(admin)
-			{	
-				<input type="text" name="description" value="@theme_data.description" />
-			}
-			else
-			{
-				@theme_data.description
-			}
-		</td>
-	</tr>
-	<tr>
 		<td>added_by</td>
 		<td>@theme_data.added_by</td>
 	</tr>
 	<tr>
 		<td>added_date</td>
 		<td>@theme_data.added_date</td>
+	</tr>
+	<tr>
+		<td>edit_date</td>
+		<td>@theme_data.edit_date</td>
 	</tr>
 	<tr>
 		<td>Chromaprint size</td>

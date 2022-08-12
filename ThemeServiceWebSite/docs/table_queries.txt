@@ -4,28 +4,33 @@ DROP TABLE theme_data;
 CREATE TABLE theme_data 
 ( 
    id int IDENTITY(1,1) NOT NULL,
-   imdb varchar(256) DEFAULT '' NOT NULL,
-   themoviedb varchar(256) DEFAULT '' NOT NULL,
-   thetvdb varchar(256) DEFAULT '' NOT NULL,
-   season int DEFAULT -1 NOT NULL,
-   episode int DEFAULT -1 NOT NULL,
-   extract_length int DEFAULT -1 NOT NULL,
-   description varchar(256) DEFAULT '' NOT NULL,
-   added_by varchar(256) DEFAULT '' NOT NULL,
+   
    added_date DateTime DEFAULT GETDATE() NOT NULL,
-   theme_cp_data_size int DEFAULT -1 NOT NULL,
-   theme_cp_data_md5 varchar(256) DEFAULT '' NOT NULL,
+   added_by varchar(256),
+   edit_date DateTime DEFAULT GETDATE() NOT NULL,
+   
+   imdb varchar(256),
+   themoviedb varchar(256),
+   thetvdb varchar(256),
+   
+   series_name varchar(512),
+   season int,
+   episode int,
+   extract_length int,
+   
+   theme_cp_data_size int,
+   theme_cp_data_md5 varchar(256),
    theme_cp_data text
 );
 ALTER TABLE theme_data ADD CONSTRAINT pk_theme_data_id PRIMARY KEY(id);
 
-INSERT INTO theme_data (imdb, themoviedb, thetvdb, season, episode, description, added_by, theme_cp_data_size, theme_cp_data_md5, theme_cp_data)
-VALUES ('tt5171438', '67198', '328711', 1, 10, 'ST Discovery', 'teamb', 25, 'an md5 of the cp data', 'some base64 data here');
+INSERT INTO theme_data (imdb, themoviedb, thetvdb, season, episode, series_name, added_by, theme_cp_data_size, theme_cp_data_md5, theme_cp_data)
+VALUES ('tt5171438', '67198', '328711', 1, 10, 'ST Discovery', 'faush01', 25, 'an md5 of the cp data', 'some base64 data here');
 
 INSERT INTO theme_data (themoviedb, theme_cp_data, added_by)
-VALUES ('67198', 'some base64 data here', 'teamb');
+VALUES ('67198', 'some base64 data here', 'faush01');
 
-INSERT INTO theme_data (imdb, themoviedb, thetvdb, description, theme_cp_data, added_by)
-VALUES ('tt5171438', '67198', '328711', 'ST Discovery', 'some base64 data here', 'teamb');
+INSERT INTO theme_data (imdb, themoviedb, thetvdb, series_name, theme_cp_data, added_by)
+VALUES ('tt5171438', '67198', '328711', 'ST Discovery', 'some base64 data here', 'test_user');
 
 select * from theme_data;

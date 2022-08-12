@@ -1,0 +1,22 @@
+﻿@{
+	ViewData["Title"] = "Add Theme";
+
+	List<string> messages = (List<string>)ViewData["messages"];
+	if(messages == null)
+	{
+		messages = new List<string>();
+	}
+
+}
+
+<h3>Adding Theme</h3>
+
+<ul>
+
+	@foreach(string message in messages)
+	{
+		<li>@message</li>
+	}
+
+</ul>
+

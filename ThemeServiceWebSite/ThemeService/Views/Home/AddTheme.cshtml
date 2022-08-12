@@ -1,6 +1,51 @@
 ﻿@{
-	ViewData["Title"] = "Home Page";
+	ViewData["Title"] = "Add Theme";
 }
+
+<script>
+
+function OnFileChange() {
+    console.log("File Changed");
+
+	const file_selector = document.querySelector("#data_file_selector");
+    if (file_selector.files.length === 0) {
+        alert("No Intro Info file selected");
+        return;
+    }
+
+    const selected_file = file_selector.files[0];
+
+    const file_name = selected_file.name.toLowerCase();
+    if (file_name.endsWith(".json") === false) { 
+        return;
+	}
+
+    const reader = new FileReader();
+    reader.readAsText(selected_file, "UTF-8");
+
+    reader.onload = (evt) => {
+        console.log("Populating form from json file");
+
+        const selected_file_string = evt.target.result;
+        try {
+            const cp_info_data = JSON.parse(selected_file_string);
+
+			document.querySelector("#series_name").value = cp_info_data.series;
+			document.querySelector("#imdb").value = cp_info_data.imdb;
+			document.querySelector("#themoviedb").value = cp_info_data.tmdb;
+			document.querySelector("#thetvdb").value = cp_info_data.tvdb;
+			document.querySelector("#season").value = cp_info_data.season;
+			document.querySelector("#episode").value = cp_info_data.episode;
+			document.querySelector("#extract_length").value = cp_info_data.extract;
+        }
+        catch (e) {
+            alert("Error parsing Intro Info file :\n" + e);
+            return;
+        }
+    };
+}
+
+</script>
 
 <h4>Add Theme</h4>
 
@@ -8,40 +53,40 @@
 
 	<table>
 		<tr>
-			<td>imbd</td>
-			<td><input type="text" name="imbd" /></td>
+			<td>imdb</td>
+			<td><input type="text" name="imdb" id="imdb" /></td>
 		</tr>
 		<tr>
 			<td>themoviedb</td>
-			<td><input type="text" name="themoviedb" /></td>
+			<td><input type="text" name="themoviedb" id="themoviedb" /></td>
 		</tr>
 		<tr>
 			<td>thetvdb</td>
-			<td><input type="text" name="thetvdb" /></td>
+			<td><input type="text" name="thetvdb" id="thetvdb" /></td>
+		</tr>
+
+		<tr>
+			<td>series name</td>
+			<td><input type="text" name="series_name" id="series_name" /></td>
 		</tr>
 
 		<tr>
 			<td>season</td>
-			<td><input type="text" name="season" /></td>
+			<td><input type="text" name="season" id="season" /></td>
 		</tr>
 		<tr>
 			<td>episode</td>
-			<td><input type="text" name="episode" /></td>
+			<td><input type="text" name="episode" id="episode" /></td>
 		</tr>
 
 		<tr>
 			<td>extract length</td>
-			<td><input type="text" name="extract_length" /></td>
+			<td><input type="text" name="extract_length" id="extract_length" /></td>
 		</tr>
 
 		<tr>
-			<td>description</td>
-			<td><input type="text" name="description" /></td>
-		</tr>
-
-		<tr>
-			<td>Chromaprint Bin File</td>
-			<td><input type="file" name="cp_data" /></td>
+			<td>Bin or JSON</td>
+			<td><input type="file" name="cp_data" id="data_file_selector" onchange="OnFileChange();"/></td>
 		</tr>
 		<tr>
 			<td colspan="2"><button type="submit" class="btn btn-outline-info btn-sm">Submit</button></td>
@@ -63,7 +108,7 @@ ffmpeg
 -t 00:01:10
 -ac 1
 -acodec pcm_s16le
--ar 16000
+-ar 44100
 -c:v nul
 -f chromaprint
 -fp_format raw
@@ -79,7 +124,7 @@ ffmpeg
 -t 00:01:10
 -ac 1
 -acodec pcm_s16le
--ar 16000
+-ar 44100
 -c:v nul
 "path to output wav file.wav"
 </pre>

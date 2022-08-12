@@ -30,6 +30,35 @@ namespace ThemeService.Data
             return ms_conn_str;
         }
 
+        private int? GetInt(SqlDataReader reader, int index)
+        {
+            int? val = null;
+            if(!reader.IsDBNull(index))
+            {
+                val = reader.GetInt32(index);
+            }
+            return val;
+        }
+
+        private string GetString(SqlDataReader reader, int index)
+        {
+            string val = null;
+            if (!reader.IsDBNull(index))
+            {
+                val = reader.GetString(index);
+            }
+            return val;
+        }
+
+        private object GetParamValue(object item)
+        {
+            if(item == null)
+            {
+                return System.DBNull.Value;
+            }
+            return item;
+        }
+
         public List<ThemeData> GetThemeDataList(ThemeQueryOptions options)
         {
             List<ThemeData> theme_data_list = new List<ThemeData>();
@@ -38,17 +67,19 @@ namespace ThemeService.Data
             List<string> fields = new List<string>()
                 {
                     "id",
+                    "added_date",
+                    "added_by",
+                    "edit_date",
                     "imdb",
                     "themoviedb",
                     "thetvdb",
+                    "series_name",
                     "season",
                     "episode",
                     "extract_length",
-                    "description",
-                    "added_by",
-                    "added_date",
                     "theme_cp_data_size",
-                    "theme_cp_data_md5"
+                    "theme_cp_data_md5"//,
+                    //"theme_cp_data"
                 };
 
             if(options.CpData)
@@ -71,7 +102,6 @@ namespace ThemeService.Data
                 }
                 where_clause.Add("imdb IN (" + string.Join(",", imdb_list) + ")");
             }
-
 
             // this is to allow fast lookup of field indexes
             Dictionary<string, int> filed_ids = new Dictionary<string, int>();
@@ -102,21 +132,26 @@ namespace ThemeService.Data
                             ThemeData data = new ThemeData();
 
                             data.id = reader.GetInt32(filed_ids["id"]);
-                            data.imdb = reader.GetString(filed_ids["imdb"]);
-                            data.thetvdb = reader.GetString(filed_ids["thetvdb"]);
-                            data.themoviedb = reader.GetString(filed_ids["themoviedb"]);
-                            data.season = reader.GetInt32(filed_ids["season"]);
-                            data.episode = reader.GetInt32(filed_ids["episode"]);
-                            data.extract_length = reader.GetInt32(filed_ids["extract_length"]);
-                            data.description = reader.GetString(filed_ids["description"]);
-                            data.added_by = reader.GetString(filed_ids["added_by"]);
+
+                            data.imdb = GetString(reader, filed_ids["imdb"]);
+                            data.thetvdb = GetString(reader, filed_ids["thetvdb"]);
+                            data.themoviedb = GetString(reader, filed_ids["themoviedb"]);
+
+                            data.season = GetInt(reader, filed_ids["season"]);
+                            data.episode = GetInt(reader, filed_ids["episode"]);
+                            data.extract_length = GetInt(reader, filed_ids["extract_length"]); 
+                            data.series_name = GetString(reader, filed_ids["series_name"]);
+
+                            data.added_by = GetString(reader, filed_ids["added_by"]);
                             data.added_date = reader.GetDateTime(filed_ids["added_date"]);
-                            data.theme_cp_data_size = reader.GetInt32(filed_ids["theme_cp_data_size"]);
-                            data.theme_cp_data_md5 = reader.GetString(filed_ids["theme_cp_data_md5"]);
+                            data.edit_date = reader.GetDateTime(filed_ids["edit_date"]);
+
+                            data.theme_cp_data_size = GetInt(reader, filed_ids["theme_cp_data_size"]);
+                            data.theme_cp_data_md5 = GetString(reader, filed_ids["theme_cp_data_md5"]);
 
                             if (options.CpData)
                             {
-                                data.theme_cp_data = reader.GetString(filed_ids["theme_cp_data"]);
+                                data.theme_cp_data = GetString(reader, filed_ids["theme_cp_data"]);
                             }
 
                             theme_data_list.Add(data);
@@ -149,7 +184,8 @@ namespace ThemeService.Data
                 "season=@season, " +
                 "episode=@episode, " +
                 "extract_length=@extract_length, " +
-                "description=@description " +
+                "series_name=@series_name, " +
+                "edit_date=GETDATE() " +
                 "WHERE id=@id";
             using (SqlConnection sql_conn = new SqlConnection(GetConnectionString()))
             {
@@ -157,13 +193,13 @@ namespace ThemeService.Data
                 using (SqlCommand command = new SqlCommand(sql, sql_conn))
                 {
                     command.Parameters.AddWithValue("id", theme_data.id);
-                    command.Parameters.AddWithValue("imdb", theme_data.imdb);
-                    command.Parameters.AddWithValue("themoviedb", theme_data.themoviedb);
-                    command.Parameters.AddWithValue("thetvdb", theme_data.thetvdb);
-                    command.Parameters.AddWithValue("season", theme_data.season);
-                    command.Parameters.AddWithValue("extract_length", theme_data.extract_length);
-                    command.Parameters.AddWithValue("episode", theme_data.episode);
-                    command.Parameters.AddWithValue("description", theme_data.description);
+                    command.Parameters.AddWithValue("imdb", GetParamValue(theme_data.imdb));
+                    command.Parameters.AddWithValue("themoviedb", GetParamValue(theme_data.themoviedb));
+                    command.Parameters.AddWithValue("thetvdb", GetParamValue(theme_data.thetvdb));
+                    command.Parameters.AddWithValue("season", GetParamValue(theme_data.season));
+                    command.Parameters.AddWithValue("extract_length", GetParamValue(theme_data.extract_length));
+                    command.Parameters.AddWithValue("episode", GetParamValue(theme_data.episode));
+                    command.Parameters.AddWithValue("series_name", GetParamValue(theme_data.series_name));
                     command.ExecuteNonQuery();
                 }
             }
@@ -172,8 +208,8 @@ namespace ThemeService.Data
         public int SaveThemeData(ThemeData theme_data)
         {
             string sql = "INSERT INTO theme_data " +
-                "(imdb, themoviedb, thetvdb, season, episode, extract_length, description, added_by, theme_cp_data_size, theme_cp_data_md5, theme_cp_data) " +
-                "VALUES(@imdb, @themoviedb, @thetvdb, @season, @episode, @extract_length, @description, @added_by, @theme_cp_data_size, @theme_cp_data_md5, @theme_cp_data);";
+                "(imdb, themoviedb, thetvdb, season, episode, extract_length, series_name, added_by, theme_cp_data_size, theme_cp_data_md5, theme_cp_data) " +
+                "VALUES(@imdb, @themoviedb, @thetvdb, @season, @episode, @extract_length, @series_name, @added_by, @theme_cp_data_size, @theme_cp_data_md5, @theme_cp_data);";
 
             using (SqlConnection sql_conn = new SqlConnection(GetConnectionString()))
             {
@@ -195,17 +231,17 @@ namespace ThemeService.Data
 
                 using (SqlCommand command = new SqlCommand(sql, sql_conn))
                 {
-                    command.Parameters.AddWithValue("imdb", theme_data.imdb);
-                    command.Parameters.AddWithValue("themoviedb", theme_data.themoviedb);
-                    command.Parameters.AddWithValue("thetvdb", theme_data.thetvdb);
-                    command.Parameters.AddWithValue("season", theme_data.season);
-                    command.Parameters.AddWithValue("episode", theme_data.episode);
-                    command.Parameters.AddWithValue("extract_length", theme_data.extract_length);
-                    command.Parameters.AddWithValue("description", theme_data.description);
-                    command.Parameters.AddWithValue("added_by", theme_data.added_by);
-                    command.Parameters.AddWithValue("theme_cp_data_size", theme_data.theme_cp_data_size);
-                    command.Parameters.AddWithValue("theme_cp_data_md5", theme_data.theme_cp_data_md5);
-                    command.Parameters.AddWithValue("theme_cp_data", theme_data.theme_cp_data);
+                    command.Parameters.AddWithValue("imdb", GetParamValue(theme_data.imdb));
+                    command.Parameters.AddWithValue("themoviedb", GetParamValue(theme_data.themoviedb));
+                    command.Parameters.AddWithValue("thetvdb", GetParamValue(theme_data.thetvdb));
+                    command.Parameters.AddWithValue("season", GetParamValue(theme_data.season));
+                    command.Parameters.AddWithValue("episode", GetParamValue(theme_data.episode));
+                    command.Parameters.AddWithValue("extract_length", GetParamValue(theme_data.extract_length));
+                    command.Parameters.AddWithValue("series_name", GetParamValue(theme_data.series_name));
+                    command.Parameters.AddWithValue("added_by", GetParamValue(theme_data.added_by));
+                    command.Parameters.AddWithValue("theme_cp_data_size", GetParamValue(theme_data.theme_cp_data_size));
+                    command.Parameters.AddWithValue("theme_cp_data_md5", GetParamValue(theme_data.theme_cp_data_md5));
+                    command.Parameters.AddWithValue("theme_cp_data", GetParamValue(theme_data.theme_cp_data));
                     command.ExecuteNonQuery();
                 }
 
