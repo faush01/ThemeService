@@ -29,10 +29,12 @@ function submit_form() {
 
 @if(admin)
 {
-	<div>
-		<button onclick="submit_form();">Update</button>
-		<button onclick="delete_action();">Delete</button>
-	</div>
+	<table>
+		<tr>
+			<td><button class="form-control form-control-sm" onclick="submit_form();">Update</button></td>
+			<td><button class="form-control form-control-sm" onclick="delete_action();">Delete</button></td>
+		</tr>
+	</table>
 }
 
 <form method="POST" action="@Url.Action("UpdateTheme", "Home")" id="edit_form">
@@ -45,7 +47,7 @@ function submit_form() {
 		<td style="width: 95%;">
 			@if(admin)
 			{
-				<input type="text" name="imdb" value="@theme_data.imdb" />
+				<input class="form-control form-control-sm" type="text" name="imdb" value="@theme_data.imdb" />
 			}
 			else
 			{
@@ -58,7 +60,7 @@ function submit_form() {
 		<td>
 			@if(admin)
 			{
-				<input type="text" name="themoviedb" value="@theme_data.themoviedb" />
+				<input class="form-control form-control-sm" type="text" name="themoviedb" value="@theme_data.themoviedb" />
 			}
 			else
 			{
@@ -71,7 +73,7 @@ function submit_form() {
 		<td>
 			@if(admin)
 			{
-				<input type="text" name="thetvdb" value="@theme_data.thetvdb" />
+				<input class="form-control form-control-sm" type="text" name="thetvdb" value="@theme_data.thetvdb" />
 			}
 			else
 			{
@@ -85,7 +87,7 @@ function submit_form() {
 		<td>
 			@if(admin)
 			{	
-				<input type="text" name="series_name" value="@theme_data.series_name" />
+				<input class="form-control form-control-sm" type="text" name="series_name" value="@theme_data.series_name" />
 			}
 			else
 			{
@@ -98,7 +100,7 @@ function submit_form() {
 		<td>
 			@if(admin)
 			{
-				<input type="text" name="season" value="@theme_data.season" />
+				<input class="form-control form-control-sm" type="text" name="season" value="@theme_data.season" />
 			}
 			else
 			{
@@ -111,7 +113,7 @@ function submit_form() {
 		<td>
 			@if(admin)
 			{	
-				<input type="text" name="episode" value="@theme_data.episode" />
+				<input class="form-control form-control-sm" type="text" name="episode" value="@theme_data.episode" />
 			}
 			else
 			{
@@ -124,7 +126,7 @@ function submit_form() {
 		<td>
 			@if(admin)
 			{	
-				<input type="text" name="extract_length" value="@theme_data.extract_length" />
+				<input class="form-control form-control-sm" type="text" name="extract_length" value="@theme_data.extract_length" />
 			}
 			else
 			{
