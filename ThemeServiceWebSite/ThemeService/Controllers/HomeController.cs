@@ -25,6 +25,42 @@ namespace ThemeService.Controllers
             _config = configuration;
         }
 
+        private void AddSearchItems(string input, List<string> items)
+        {
+            if (!string.IsNullOrEmpty(input))
+            {
+                input = input.ToLower().Trim();
+                string[] tokens = input.Split(",", StringSplitOptions.RemoveEmptyEntries);
+                if (tokens.Length > 0)
+                {
+                    items.AddRange(tokens);
+                }
+            }
+        }
+
+        public IActionResult Search(string name, string imdb, string tvdb, string tmdb)
+        {
+            GitHubUser user_info = Utils.UserDetails.GetUserInfo(User);
+            ViewData["user_info"] = user_info;
+
+            Store store = new Store(_config);
+
+            ThemeQueryOptions options = new ThemeQueryOptions();
+            options.CpData = false;
+
+            options.SerieName = name;
+
+            AddSearchItems(imdb, options.Imdb);
+            AddSearchItems(tvdb, options.TheTvDb);
+            AddSearchItems(tmdb, options.ThemovieDb);
+
+            List<ThemeData> theme_list = store.GetThemeDataList(options);
+
+            ViewData["theme_list"] = theme_list;
+
+            return View();
+        }
+
         public IActionResult Index()
         {
             GitHubUser user_info = Utils.UserDetails.GetUserInfo(User);
@@ -59,18 +95,20 @@ namespace ThemeService.Controllers
             GitHubUser user_info = Utils.UserDetails.GetUserInfo(User);
             ViewData["user_info"] = user_info;
 
-            Store store = new Store(_config);
-            
-            ThemeQueryOptions options = new ThemeQueryOptions();
-            options.CpData = true;
-            options.Id.Add(id);
-
-            List<ThemeData> theme_list = store.GetThemeDataList(options);
-
-            ThemeData theme_data = null;
-            if(theme_list.Count > 0)
+            ThemeData theme_data = new ThemeData();
+            if (id != 0)
             {
-                theme_data = theme_list[0];
+                Store store = new Store(_config);
+
+                ThemeQueryOptions options = new ThemeQueryOptions();
+                options.CpData = true;
+                options.Id.Add(id.ToString());
+
+                List<ThemeData> theme_list = store.GetThemeDataList(options);
+                if (theme_list.Count > 0)
+                {
+                    theme_data = theme_list[0];
+                }
             }
 
             ViewData["theme_data"] = theme_data;
@@ -89,7 +127,7 @@ namespace ThemeService.Controllers
 
             ThemeQueryOptions options = new ThemeQueryOptions();
             options.CpData = false;
-            options.Id.Add(id);
+            options.Id.Add(id.ToString());
             List<ThemeData> theme_list = store.GetThemeDataList(options);
 
             ThemeData theme = null;
@@ -276,7 +314,7 @@ namespace ThemeService.Controllers
 
             Store store = new Store(_config);
             ThemeQueryOptions options = new ThemeQueryOptions();
-            options.Id.Add(theme_id.Value);
+            options.Id.Add(theme_id.Value.ToString());
             List<ThemeData> theme_list = store.GetThemeDataList(options);
 
             if(theme_list.Count == 0)

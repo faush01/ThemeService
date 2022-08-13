@@ -1,9 +1,5 @@
 ﻿@{
 	ThemeData theme_data = (ThemeData)ViewData["theme_data"];
-	if(theme_data == null)
-	{
-		theme_data = new ThemeData();
-	}
 	GitHubUser user_info = (GitHubUser)ViewData["user_info"];
 
 	bool admin = false;
@@ -29,7 +25,7 @@ function submit_form() {
 
 </script>
 
-<h4>Theme chormaprint info</h4>
+<h4>Theme Info</h4>
 
 @if(admin)
 {
@@ -45,24 +41,20 @@ function submit_form() {
 
 <table class="table table-sm">
 	<tr>
-		<td>id</td>
-		<td>@theme_data.id</td>
-	</tr>
-	<tr>
-		<td>imbd</td>
-		<td>
+		<td style="white-space:nowrap">Imbd</td>
+		<td style="width: 95%;">
 			@if(admin)
 			{
 				<input type="text" name="imdb" value="@theme_data.imdb" />
 			}
 			else
 			{
-				@theme_data.imdb
+				<a href="https://www.imdb.com/title/@theme_data.imdb" target="_blank">@theme_data.imdb</a>
 			}
 		</td>
 	</tr>
 	<tr>
-		<td>themoviedb</td>
+		<td style="white-space:nowrap">TheMovieDB</td>
 		<td>
 			@if(admin)
 			{
@@ -70,12 +62,12 @@ function submit_form() {
 			}
 			else
 			{
-				@theme_data.themoviedb
+				<a href="https://www.themoviedb.org/tv/@theme_data.themoviedb" target="_blank">@theme_data.themoviedb</a>			
 			}
 		</td>
 	</tr>
 	<tr>
-		<td>thetvdb</td>
+		<td style="white-space:nowrap">TheTvDB</td>
 		<td>
 			@if(admin)
 			{
@@ -83,12 +75,13 @@ function submit_form() {
 			}
 			else
 			{
-				@theme_data.thetvdb
+				<a href="https://thetvdb.com/?tab=series&id=@theme_data.thetvdb" target="_blank">@theme_data.thetvdb</a>
+				
 			}
 		</td>
 	</tr>
 	<tr>
-		<td>series name</td>
+		<td style="white-space:nowrap">Series Name</td>
 		<td>
 			@if(admin)
 			{	
@@ -101,7 +94,7 @@ function submit_form() {
 		</td>
 	</tr>
 	<tr>
-		<td>season</td>
+		<td style="white-space:nowrap">Season</td>
 		<td>
 			@if(admin)
 			{
@@ -114,7 +107,7 @@ function submit_form() {
 		</td>
 	</tr>
 	<tr>
-		<td>episode</td>
+		<td style="white-space:nowrap">Episode</td>
 		<td>
 			@if(admin)
 			{	
@@ -127,7 +120,7 @@ function submit_form() {
 		</td>
 	</tr>
 	<tr>
-		<td>extract length</td>
+		<td style="white-space:nowrap">Extract Length (minutes)</td>
 		<td>
 			@if(admin)
 			{	
@@ -140,29 +133,31 @@ function submit_form() {
 		</td>
 	</tr>
 	<tr>
-		<td>added_by</td>
+		<td style="white-space:nowrap">Added By</td>
 		<td>@theme_data.added_by</td>
 	</tr>
 	<tr>
-		<td>added_date</td>
+		<td style="white-space:nowrap">Added</td>
 		<td>@theme_data.added_date</td>
 	</tr>
 	<tr>
-		<td>edit_date</td>
+		<td style="white-space:nowrap">Edit</td>
 		<td>@theme_data.edit_date</td>
 	</tr>
 	<tr>
-		<td>Chromaprint size</td>
+		<td style="white-space:nowrap">Chromaprint Size</td>
 		<td>@theme_data.theme_cp_data_size</td>
 	</tr>
 	<tr>
-		<td>Chromaprint md5</td>
+		<td style="white-space:nowrap">Chromaprint md5</td>
 		<td>@theme_data.theme_cp_data_md5</td>
 	</tr>
 	<tr>
-		<td colspan="2">
-			Chromaprint Data:<br />
-			<pre>@StringUtils.WrapString(theme_data.theme_cp_data, 150)</pre>
+		<td colspan="2" style="white-space:nowrap">Chromaprint Data</td>
+	</tr>
+	<tr>
+		<td colspan="2" align="center">
+			<div style="text-align: left; width: 90%; word-wrap: break-word; white-space: pre-wrap; word-break: break-all; font-family:Consolas; font-size:65%;">@theme_data.theme_cp_data</div>
 		</td>
 	</tr>
 </table>

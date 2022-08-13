@@ -59,6 +59,17 @@ namespace ThemeService.Data
             return item;
         }
 
+        private string ListToParamString(List<string> list)
+        {
+            List<string> new_list = new List<string>();
+            foreach (string item in list)
+            {
+                string new_item = item.Replace("'", "''");
+                new_list.Add("'" + new_item + "'");
+            }
+            return string.Join(",", new_list);
+        }
+
         public List<ThemeData> GetThemeDataList(ThemeQueryOptions options)
         {
             List<ThemeData> theme_data_list = new List<ThemeData>();
@@ -89,18 +100,34 @@ namespace ThemeService.Data
 
             // build where
             List<string> where_clause = new List<string>();
+            if(!string.IsNullOrEmpty(options.SerieName))
+            {
+                string name = options.SerieName;
+                if(name.IndexOf("*") > -1)
+                {
+                    name = name.Replace("*", "%");
+                    where_clause.Add("series_name LIKE '" + name + "'");
+                }
+                else 
+                {
+                    where_clause.Add("series_name = '" + name + "'");
+                }
+            }
             if(options.Id.Count > 0)
             {
-                where_clause.Add("id IN (" + string.Join(",", options.Id) + ")");
+                where_clause.Add("id IN (" + ListToParamString(options.Id) + ")");
             }
             if(options.Imdb.Count > 0)
             {
-                List<string> imdb_list = new List<string>();
-                foreach (string imbd in options.Imdb) // build the string list and escape any ' chars
-                {
-                    imdb_list.Add("'" + imbd.Replace("'", "''") + "'");
-                }
-                where_clause.Add("imdb IN (" + string.Join(",", imdb_list) + ")");
+                where_clause.Add("imdb IN (" + ListToParamString(options.Imdb) + ")");
+            }
+            if (options.ThemovieDb.Count > 0)
+            {
+                where_clause.Add("themoviedb IN (" + ListToParamString(options.ThemovieDb) + ")");
+            }
+            if (options.TheTvDb.Count > 0)
+            {
+                where_clause.Add("thetvdb IN (" + ListToParamString(options.TheTvDb) + ")");
             }
 
             // this is to allow fast lookup of field indexes

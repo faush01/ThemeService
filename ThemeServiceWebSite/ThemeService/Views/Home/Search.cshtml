@@ -1,0 +1,48 @@
+﻿@{
+	ViewData["Title"] = "Search";
+
+    List<ThemeData> theme_list = (List<ThemeData>)ViewData["theme_list"];
+    if(theme_list == null)
+    {
+        theme_list = new List<ThemeData>();
+    }
+}
+
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">imdb</th>
+            <th scope="col">themoviedb</th>
+            <th scope="col">thetvdb</th>
+            <th scope="col">series name</th>
+            <th scope="col">season</th>
+            <th scope="col">episode</th>
+            <th scope="col">extract</th>
+            <th scope="col">added_by</th>
+            <th scope="col">added_date</th>
+            <th scope="col">edit_date</th>
+        </tr>
+    </thead>
+
+    <tbody>
+    @foreach(ThemeData theme in theme_list)
+    {
+        <tr>
+            <td><a href="@Url.Action("ShowItemInfo", "Home")?id=@theme.id">view</a></td>
+            <td>@theme.imdb</td>
+            <td>@theme.themoviedb</td>
+            <td>@theme.thetvdb</td>
+            <td>@theme.series_name</td>
+            <td>@theme.season</td>
+            <td>@theme.episode</td>
+            <td>@theme.extract_length</td>
+            <td>@theme.added_by</td>
+            <td>@theme.added_date</td>
+            <td>@theme.edit_date</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+
