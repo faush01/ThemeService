@@ -6,22 +6,80 @@
     {
         theme_list = new List<ThemeData>();
     }
+    string series_name = (string)ViewData["series_name"];
+    string imdb_list = (string)ViewData["imdb_list"];
+    string tvdb_list = (string)ViewData["tvdb_list"];
+    string tmdb_list = (string)ViewData["tmdb_list"];
 }
+
+<!-- Font Awesome -->
+<link
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+  rel="stylesheet"
+/>
+<!-- Google Fonts -->
+<link
+  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+  rel="stylesheet"
+/>
+<!-- MDB -->
+<link
+  href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/4.4.0/mdb.min.css"
+  rel="stylesheet"
+/>
+
+<!-- MDB -->
+<script
+  type="text/javascript"
+  src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/4.4.0/mdb.min.js"
+></script>
+
+<h4>Search</h4>
+<form method="GET" action="">
+
+    <table>
+        <tr>
+            <td style="white-space:nowrap">Series Name</td>
+            <td style="white-space:nowrap"><input style="width: 300px;" placeholder="use wildcard *" class="form-control form-control-sm" type="text" name="name" value="@series_name"/></td>
+        </tr>
+        <tr>
+            <td style="white-space:nowrap">Imdb</td>
+            <td style="white-space:nowrap"><input style="width: 300px;" placeholder="comma seperate multiple" class="form-control form-control-sm" type="text" name="imdb" value="@imdb_list"/></td>
+        </tr>
+        <tr>
+            <td style="white-space:nowrap">TheMovieDB</td>
+            <td style="white-space:nowrap"><input style="width: 300px;" placeholder="comma seperate multiple" class="form-control form-control-sm" type="text" name="tmdb" value="@tmdb_list"/></td>
+        </tr>
+        <tr>
+            <td style="white-space:nowrap">TheTvDB</td>
+            <td style="white-space:nowrap"><input style="width: 300px;" placeholder="comma seperate multiple" class="form-control form-control-sm" type="text" name="tvdb" value="@tvdb_list"/></td>
+        </tr>
+        <tr>
+            <td style="white-space:nowrap"></td>
+            <td style="white-space:nowrap"><input type="checkbox" name="download" value="true"/> Download results</td>
+        </tr>
+        <tr>
+            <td style="white-space:nowrap"></td>
+            <td style="white-space:nowrap"><input class="form-control form-control-sm" type="submit"/></td>
+        </tr>
+    </table>
+
+</form>
+
+<br />
 
 <table class="table table-sm">
     <thead>
         <tr>
             <th scope="col"></th>
-            <th scope="col">imdb</th>
-            <th scope="col">themoviedb</th>
-            <th scope="col">thetvdb</th>
-            <th scope="col">series name</th>
-            <th scope="col">season</th>
-            <th scope="col">episode</th>
-            <th scope="col">extract</th>
-            <th scope="col">added_by</th>
-            <th scope="col">added_date</th>
-            <th scope="col">edit_date</th>
+            <th scope="col">Imdb</th>
+            <th scope="col">TheMovieDB</th>
+            <th scope="col">TheTvDB</th>
+            <th scope="col">Series Name</th>
+            <th scope="col">Season</th>
+            <th scope="col">Episode</th>
+            <th scope="col">Added By</th>
+            <th scope="col">Added</th>
         </tr>
     </thead>
 
@@ -29,17 +87,20 @@
     @foreach(ThemeData theme in theme_list)
     {
         <tr>
-            <td><a href="@Url.Action("ShowItemInfo", "Home")?id=@theme.id">view</a></td>
+
+            <td>
+                <a style="color:inherit;" href="@Url.Action("ShowItemInfo", "Home")/@theme.id"><i class="fas fa-eye" title="View"></i></a>
+                &nbsp;
+                <a style="color:inherit;" href="@Url.Action("DownloadItemInfo", "Home")/@theme.id"><i class="fas fa-download" title="Download"></i></a>
+            </td>
             <td>@theme.imdb</td>
             <td>@theme.themoviedb</td>
             <td>@theme.thetvdb</td>
             <td>@theme.series_name</td>
             <td>@theme.season</td>
             <td>@theme.episode</td>
-            <td>@theme.extract_length</td>
             <td>@theme.added_by</td>
             <td>@theme.added_date</td>
-            <td>@theme.edit_date</td>
         </tr>
     }
     </tbody>

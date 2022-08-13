@@ -6,8 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using ThemeService.Data;
 using ThemeService.Models;
@@ -38,15 +40,116 @@ namespace ThemeService.Controllers
             }
         }
 
-        public IActionResult Search(string name, string imdb, string tvdb, string tmdb)
+        private string GetJsonString(Dictionary<string, object> data)
+        {
+            List<Type> num_types = new List<Type>() { typeof(int), typeof(long), typeof(double) }; 
+            StringBuilder sb = new StringBuilder(4096);
+            int i = 0;
+            sb.Append("{\r\n");
+            foreach (var x in data)
+            {
+                string value = "";
+                if(x.Value == null)
+                {
+                    value = "null";
+                }
+                else if (num_types.Contains(x.Value.GetType()))
+                {
+                    value = x.Value.ToString();
+                }
+                else
+                {
+                    value = "\"" + x.Value.ToString() + "\"";
+                }
+
+                sb.Append("\t\"" + x.Key + "\":" + value);
+                if (i < data.Count - 1)
+                {
+                    sb.Append(",");
+                }
+                sb.Append("\r\n");
+                i++;
+            }
+            sb.Append("}");
+
+            return sb.ToString();
+        }
+
+        private string GetItemJson(ThemeData item)
+        {
+            Dictionary<string, object> theme_data = new Dictionary<string, object>();
+
+            theme_data.Add("tvdb", item.thetvdb);
+            theme_data.Add("imdb", item.imdb);
+            theme_data.Add("tmdb", item.themoviedb);
+
+            theme_data.Add("series", item.series_name);
+            theme_data.Add("season", item.season);
+            theme_data.Add("episode", item.episode);
+
+            theme_data.Add("extract", item.extract_length);
+
+            theme_data.Add("cp_data", item.theme_cp_data);
+            theme_data.Add("cp_data_length", item.theme_cp_data_size);
+            theme_data.Add("cp_data_md5", item.theme_cp_data_md5);
+
+            return GetJsonString(theme_data);
+        }
+
+        private byte[] GetItemsZip(List<ThemeData> items)
+        {
+            using (MemoryStream zip_ms = new MemoryStream())
+            {
+                using (ZipArchive archive = new ZipArchive(zip_ms, ZipArchiveMode.Create))
+                {
+                    foreach(ThemeData item in items)
+                    {
+                        ZipArchiveEntry readmeEntry = archive.CreateEntry(item.theme_cp_data_md5 + ".json");
+                        using (StreamWriter writer = new StreamWriter(readmeEntry.Open()))
+                        {
+                            writer.WriteLine(GetItemJson(item));
+                        }
+                    }
+                }
+                return zip_ms.ToArray();
+            }
+        }
+
+        public IActionResult DownloadItemInfo(int id)
+        {
+            ThemeData theme_data = new ThemeData();
+            if (id != 0)
+            {
+                Store store = new Store(_config);
+
+                ThemeQueryOptions options = new ThemeQueryOptions();
+                options.CpData = true;
+                options.Id.Add(id.ToString());
+
+                List<ThemeData> theme_list = store.GetThemeDataList(options);
+                if (theme_list.Count > 0)
+                {
+                    theme_data = theme_list[0];
+                }
+            }
+
+            string item_json = GetItemJson(theme_data);
+            byte[] bytes = Encoding.UTF8.GetBytes(item_json);
+            MemoryStream ms = new MemoryStream(bytes);
+            return File(ms, "application/json");//, "chromaprint_intro_items.zip");
+        }
+
+        public IActionResult Search(string name, string imdb, string tvdb, string tmdb, string download)
         {
             GitHubUser user_info = Utils.UserDetails.GetUserInfo(User);
             ViewData["user_info"] = user_info;
 
+            bool do_down = !string.IsNullOrEmpty(download) && download.Equals("true", StringComparison.InvariantCultureIgnoreCase);
+
             Store store = new Store(_config);
 
             ThemeQueryOptions options = new ThemeQueryOptions();
-            options.CpData = false;
+            options.CpData = do_down;
 
             options.SerieName = name;
 
@@ -54,26 +157,39 @@ namespace ThemeService.Controllers
             AddSearchItems(tvdb, options.TheTvDb);
             AddSearchItems(tmdb, options.ThemovieDb);
 
-            List<ThemeData> theme_list = store.GetThemeDataList(options);
+            List<ThemeData> theme_list = new List<ThemeData>();
 
-            ViewData["theme_list"] = theme_list;
+            if (!string.IsNullOrEmpty(options.SerieName) ||
+                options.Imdb.Count > 0 ||
+                options.TheTvDb.Count > 0 ||
+                options.ThemovieDb.Count > 0)
+            {
+                theme_list = store.GetThemeDataList(options);
+            }
 
-            return View();
+            // download or view
+            if(do_down)
+            {
+                byte[] zip_bytes = GetItemsZip(theme_list);
+                MemoryStream ms = new MemoryStream(zip_bytes);
+                return File(ms, "application/octet-stream", "chromaprint_intro_items.zip");
+            }
+            else 
+            {
+                ViewData["series_name"] = name;
+                ViewData["imdb_list"] = imdb;
+                ViewData["tvdb_list"] = tvdb;
+                ViewData["tmdb_list"] = tmdb;
+                ViewData["theme_list"] = theme_list;
+
+                return View();
+            }
         }
 
         public IActionResult Index()
         {
             GitHubUser user_info = Utils.UserDetails.GetUserInfo(User);
             ViewData["user_info"] = user_info;
-
-            Store store = new Store(_config);
-
-            ThemeQueryOptions options = new ThemeQueryOptions();
-            options.CpData = false;
-
-            List<ThemeData> theme_list = store.GetThemeDataList(options);
-
-            ViewData["theme_list"] = theme_list;
 
             return View();
         }
