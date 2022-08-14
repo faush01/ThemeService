@@ -2,6 +2,21 @@
 	ViewData["Title"] = "Add Theme";
 }
 
+<style>
+	div.code {
+		margin: auto; 
+		border: 1px solid #777777; 
+		padding: 10px; 
+		text-align: left; 
+		width: 80%; 
+		word-wrap: break-word; 
+		white-space: pre-wrap; 
+		word-break: break-all; 
+		font-family:Consolas; 
+		font-size:75%;
+	}
+</style>
+
 <script>
 
 function OnFileChange() {
@@ -94,42 +109,63 @@ function OnFileChange() {
 		</tr>
 
 	</table>
-	
-	<br />
+</form>
 
-	<h4>Creating theme intro chromaprint files</h4>
-
-<div>To create the chromaprint bin file to submit use ffmpeg.</div>
-<div>The following will extract an audio chromaprint from 6:10 to 7:20 of the input video and save the raw data to a file that can be submitted in the above form.</div>
 <br />
-<pre>
-ffmpeg
--i "path to episode video file"
+
+<h5>Creating theme intro files (Raw Bin or Json Info)</h5>
+
+<h6>Json Info Files</h6>
+<div>
+	<p>There are a number of tools and plugins that can produce json intro info files.
+	These files can be directly imported into this database using the above form.
+	Just select the file and the form should auto populate with the data from the json info file.</p>
+	The json intro info format:
+</div>
+<br />
+<div class="code">{
+	"series":"Series Name",
+	"season":3,
+	"episode":2,
+	"tvdb":"TV DB ID",
+	"imdb":"ImDB ID",
+	"tmdb":"TheMovieDB ID",
+	"extract":10,
+	"cp_data":"Base64 encoded raw chromaprint data of the theme audio",
+	"cp_data_length":len of chromaprint bytes,
+	"cp_data_md5":"MD5 of raw chromaprint bytes"
+}
+</div>
+
+<br />
+
+<h6>Raw Bin Chromaprint Data</h6>
+<div>To create the chromaprint raw bin data file to submit you can use ffmpeg directly.</div>
+<div>The following parameters will extract an audio chromaprint from 6:10 to 7:20 of the input video and save the raw data to a file that can be submitted in the above form.</div>
+<br />
+<div class="code">ffmpeg
+-i "path_to_episode_video_file.ext"
 -ss 00:06:10
 -t 00:01:10
--ac 1
--acodec pcm_s16le
--ar 44100
--c:v nul
+-ac 1 -acodec pcm_s16le -ar 44100 -c:v nul
 -f chromaprint
 -fp_format raw
-"path to output chromaprint file.bin"
-</pre>
+"path_to_output_chromaprint_file.bin"
+</div>
+
 <br />
-<div>To verify you have the correct segment of audio which includes just the intro theme music in your chromaprint you can use the following that will just save the audio as a wav file so you can play it back and verify it is the correct time segment.</div>
+<div>To verify you have the correct segment of audio which includes just the intro theme music in your chromaprint you can use the following that will save the audio as a wav file so you can play it back and verify it is the correct time segment.</div>
 <br />
-<pre>
-ffmpeg
--i "path to episode video file"
+
+<div class="code">ffmpeg
+-i "path_to_episode_video_file.ext"
 -ss 00:06:10
 -t 00:01:10
--ac 1
--acodec pcm_s16le
--ar 44100
--c:v nul
-"path to output wav file.wav"
-</pre>
+-ac 1 -acodec pcm_s16le -ar 44100 -c:v nul
+-f wav
+"path_to_output_wav_file.wav"
+</div>
 
-</form>
+
 
 
