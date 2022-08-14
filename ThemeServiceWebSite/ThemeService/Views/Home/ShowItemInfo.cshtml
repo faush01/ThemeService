@@ -1,4 +1,6 @@
 ﻿@{
+	ViewData["Title"] = "Theme Info";
+
 	ThemeData theme_data = (ThemeData)ViewData["theme_data"];
 	GitHubUser user_info = (GitHubUser)ViewData["user_info"];
 
@@ -23,6 +25,10 @@ function submit_form() {
 	document.getElementById("edit_form").submit();
 }
 
+function enable_save() {
+    document.getElementById("save_button").disabled = false;
+}
+
 </script>
 
 <h4>Theme Info</h4>
@@ -31,7 +37,7 @@ function submit_form() {
 {
 	<table>
 		<tr>
-			<td><button class="form-control form-control-sm" onclick="submit_form();">Update</button></td>
+			<td><button class="form-control form-control-sm" onclick="submit_form();" id="save_button" disabled>Save</button></td>
 			<td><button class="form-control form-control-sm" onclick="delete_action();">Delete</button></td>
 		</tr>
 	</table>
@@ -47,7 +53,7 @@ function submit_form() {
 		<td style="width: 95%;">
 			@if(admin)
 			{
-				<input class="form-control form-control-sm" type="text" name="imdb" value="@theme_data.imdb" />
+				<input class="form-control form-control-sm" type="text" name="imdb" value="@theme_data.imdb" onchange="enable_save();" />
 			}
 			else
 			{
@@ -60,7 +66,7 @@ function submit_form() {
 		<td>
 			@if(admin)
 			{
-				<input class="form-control form-control-sm" type="text" name="themoviedb" value="@theme_data.themoviedb" />
+				<input class="form-control form-control-sm" type="text" name="themoviedb" value="@theme_data.themoviedb" onchange="enable_save();" />
 			}
 			else
 			{
@@ -73,7 +79,7 @@ function submit_form() {
 		<td>
 			@if(admin)
 			{
-				<input class="form-control form-control-sm" type="text" name="thetvdb" value="@theme_data.thetvdb" />
+				<input class="form-control form-control-sm" type="text" name="thetvdb" value="@theme_data.thetvdb" onchange="enable_save();" />
 			}
 			else
 			{
@@ -87,7 +93,7 @@ function submit_form() {
 		<td>
 			@if(admin)
 			{	
-				<input class="form-control form-control-sm" type="text" name="series_name" value="@theme_data.series_name" />
+				<input class="form-control form-control-sm" type="text" name="series_name" value="@theme_data.series_name" onchange="enable_save();" />
 			}
 			else
 			{
@@ -100,7 +106,7 @@ function submit_form() {
 		<td>
 			@if(admin)
 			{
-				<input class="form-control form-control-sm" type="text" name="season" value="@theme_data.season" />
+				<input class="form-control form-control-sm" type="text" name="season" value="@theme_data.season" onchange="enable_save();" />
 			}
 			else
 			{
@@ -113,7 +119,7 @@ function submit_form() {
 		<td>
 			@if(admin)
 			{	
-				<input class="form-control form-control-sm" type="text" name="episode" value="@theme_data.episode" />
+				<input class="form-control form-control-sm" type="text" name="episode" value="@theme_data.episode" onchange="enable_save();" />
 			}
 			else
 			{
@@ -126,7 +132,7 @@ function submit_form() {
 		<td>
 			@if(admin)
 			{	
-				<input class="form-control form-control-sm" type="text" name="extract_length" value="@theme_data.extract_length" />
+				<input class="form-control form-control-sm" type="text" name="extract_length" value="@theme_data.extract_length" onchange="enable_save();" />
 			}
 			else
 			{

@@ -51,45 +51,46 @@ function OnFileChange() {
 
 <form method="POST" action="@Url.Action("AddNewTheme", "Home")" enctype="multipart/form-data">
 
-	<table>
+	<table class="table table-sm">
 		<tr>
-			<td>imdb</td>
-			<td><input type="text" name="imdb" id="imdb" /></td>
+			<td style="white-space:nowrap">Imdb</td>
+			<td style="white-space:nowrap; width:100%;"><input input style="width: 300px;" type="text" name="imdb" id="imdb" class="form-control form-control-sm" /></td>
 		</tr>
 		<tr>
-			<td>themoviedb</td>
-			<td><input type="text" name="themoviedb" id="themoviedb" /></td>
+			<td style="white-space:nowrap">TheMovieDB</td>
+			<td style="white-space:nowrap"><input input style="width: 300px;" type="text" name="themoviedb" id="themoviedb" class="form-control form-control-sm" /></td>
 		</tr>
 		<tr>
-			<td>thetvdb</td>
-			<td><input type="text" name="thetvdb" id="thetvdb" /></td>
-		</tr>
-
-		<tr>
-			<td>series name</td>
-			<td><input type="text" name="series_name" id="series_name" /></td>
+			<td style="white-space:nowrap">TheTvDB</td>
+			<td style="white-space:nowrap"><input input style="width: 300px;" type="text" name="thetvdb" id="thetvdb" class="form-control form-control-sm" /></td>
 		</tr>
 
 		<tr>
-			<td>season</td>
-			<td><input type="text" name="season" id="season" /></td>
-		</tr>
-		<tr>
-			<td>episode</td>
-			<td><input type="text" name="episode" id="episode" /></td>
+			<td style="white-space:nowrap">Series Name</td>
+			<td style="white-space:nowrap"><input input style="width: 300px;" type="text" name="series_name" id="series_name" class="form-control form-control-sm" /></td>
 		</tr>
 
 		<tr>
-			<td>extract length</td>
-			<td><input type="text" name="extract_length" id="extract_length" /></td>
+			<td style="white-space:nowrap">Season</td>
+			<td style="white-space:nowrap"><input input style="width: 300px;" type="text" name="season" id="season" class="form-control form-control-sm" /></td>
+		</tr>
+		<tr>
+			<td style="white-space:nowrap">Episode</td>
+			<td style="white-space:nowrap"><input input style="width: 300px;" type="text" name="episode" id="episode" class="form-control form-control-sm" /></td>
 		</tr>
 
 		<tr>
-			<td>Bin or JSON</td>
-			<td><input type="file" name="cp_data" id="data_file_selector" onchange="OnFileChange();"/></td>
+			<td style="white-space:nowrap">Extract Length (minutes)</td>
+			<td style="white-space:nowrap"><input input style="width: 300px;" type="text" name="extract_length" id="extract_length" class="form-control form-control-sm" /></td>
+		</tr>
+
+		<tr>
+			<td style="white-space:nowrap">Raw Bin or JSON Info</td>
+			<td style="white-space:nowrap"><input input style="width: 300px;" type="file" name="cp_data" id="data_file_selector" onchange="OnFileChange();" class="form-control form-control-sm"/></td>
 		</tr>
 		<tr>
-			<td colspan="2"><button type="submit" class="btn btn-outline-info btn-sm">Submit</button></td>
+			<td style="white-space:nowrap"></td>
+			<td style="white-space:nowrap"><button style="width: 150px;" type="submit" class="form-control form-control-sm">Submit</button></td>
 		</tr>
 
 	</table>
