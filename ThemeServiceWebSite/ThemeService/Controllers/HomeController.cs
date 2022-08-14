@@ -35,7 +35,13 @@ namespace ThemeService.Controllers
                 string[] tokens = input.Split(",", StringSplitOptions.RemoveEmptyEntries);
                 if (tokens.Length > 0)
                 {
-                    items.AddRange(tokens);
+                    foreach(string token in tokens)
+                    {
+                        if(!string.IsNullOrEmpty(token))
+                        {
+                            items.Add(token.Trim());
+                        }
+                    }
                 }
             }
         }
@@ -139,7 +145,17 @@ namespace ThemeService.Controllers
             return File(ms, "application/json");//, "chromaprint_intro_items.zip");
         }
 
-        public IActionResult Search(string name, string imdb, string tvdb, string tmdb, string download)
+        public IActionResult Search(
+            string name, 
+            string imdb, 
+            string tvdb, 
+            string tmdb,
+            string md5,
+            string added,
+            string limit,
+            string orderby,
+            string orderdir,
+            string download)
         {
             GitHubUser user_info = Utils.UserDetails.GetUserInfo(User);
             ViewData["user_info"] = user_info;
@@ -156,16 +172,34 @@ namespace ThemeService.Controllers
             AddSearchItems(imdb, options.Imdb);
             AddSearchItems(tvdb, options.TheTvDb);
             AddSearchItems(tmdb, options.ThemovieDb);
+            AddSearchItems(md5, options.Md5);
+            AddSearchItems(added, options.AddedBy);
 
-            List<ThemeData> theme_list = new List<ThemeData>();
+            options.OrderBy = OrderBy.added_date;
+            options.OrderByDirection = OrderByDirection.DESC;
 
-            if (!string.IsNullOrEmpty(options.SerieName) ||
-                options.Imdb.Count > 0 ||
-                options.TheTvDb.Count > 0 ||
-                options.ThemovieDb.Count > 0)
+            if(!string.IsNullOrEmpty(limit))
             {
-                theme_list = store.GetThemeDataList(options);
+                int int_val = 0;
+                int.TryParse(limit, out int_val);
+                options.Limit = int_val;
             }
+
+            if(!string.IsNullOrEmpty(orderby))
+            {
+                int int_val = 0;
+                int.TryParse(orderby, out int_val);
+                options.OrderBy = (OrderBy)int_val;
+            }
+
+            if (!string.IsNullOrEmpty(orderdir))
+            {
+                int int_val = 0;
+                int.TryParse(orderdir, out int_val);
+                options.OrderByDirection = (OrderByDirection)int_val;
+            }
+
+            List<ThemeData> theme_list = store.GetThemeDataList(options);
 
             // download or view
             if(do_down)
@@ -180,6 +214,12 @@ namespace ThemeService.Controllers
                 ViewData["imdb_list"] = imdb;
                 ViewData["tvdb_list"] = tvdb;
                 ViewData["tmdb_list"] = tmdb;
+                ViewData["md5"] = md5;
+                ViewData["added_by"] = added;
+                ViewData["limit"] = limit;
+                ViewData["orderby"] = orderby;
+                ViewData["orderdir"] = orderdir;
+
                 ViewData["theme_list"] = theme_list;
 
                 return View();

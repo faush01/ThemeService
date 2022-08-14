@@ -103,15 +103,9 @@ namespace ThemeService.Data
             if(!string.IsNullOrEmpty(options.SerieName))
             {
                 string name = options.SerieName;
-                if(name.IndexOf("*") > -1)
-                {
-                    name = name.Replace("*", "%");
-                    where_clause.Add("series_name LIKE '" + name + "'");
-                }
-                else 
-                {
-                    where_clause.Add("series_name = '" + name + "'");
-                }
+                name = name.Replace("'", "''");
+                name = name.Replace("*", "%");
+                where_clause.Add("series_name LIKE '%" + name + "%'");
             }
             if(options.Id.Count > 0)
             {
@@ -129,6 +123,14 @@ namespace ThemeService.Data
             {
                 where_clause.Add("thetvdb IN (" + ListToParamString(options.TheTvDb) + ")");
             }
+            if (options.Md5.Count > 0)
+            {
+                where_clause.Add("theme_cp_data_md5 IN (" + ListToParamString(options.Md5) + ")");
+            }
+            if (options.AddedBy.Count > 0)
+            {
+                where_clause.Add("added_by IN (" + ListToParamString(options.AddedBy) + ")");
+            }
 
             // this is to allow fast lookup of field indexes
             Dictionary<string, int> filed_ids = new Dictionary<string, int>();
@@ -137,14 +139,23 @@ namespace ThemeService.Data
                 filed_ids.Add(fields[index], index);
             }
 
-            string sql = "SELECT " + string.Join(",", fields) + " ";
-            sql += "FROM theme_data";
+            string sql = "SELECT";
+
+            if(options.Limit != 0)
+            {
+                sql += " TOP " + options.Limit;
+            }
+            
+            sql += " " + string.Join(",", fields);
+            sql += " FROM theme_data";
 
             // add the where clause
             if(where_clause.Count > 0)
             {
                 sql += " WHERE " + string.Join(" AND ", where_clause);
             }
+
+            sql += " ORDER BY " + options.OrderBy + " " + options.OrderByDirection;
 
             // do query
             using (SqlConnection sql_conn = new SqlConnection(GetConnectionString()))

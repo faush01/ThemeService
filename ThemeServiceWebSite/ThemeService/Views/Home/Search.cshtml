@@ -1,5 +1,6 @@
 ﻿@{
-	ViewData["Title"] = "Search";
+    ViewData["Title"] = "Search";
+    string selected = "selected";
 
     List<ThemeData> theme_list = (List<ThemeData>)ViewData["theme_list"];
     if(theme_list == null)
@@ -10,6 +11,12 @@
     string imdb_list = (string)ViewData["imdb_list"];
     string tvdb_list = (string)ViewData["tvdb_list"];
     string tmdb_list = (string)ViewData["tmdb_list"];
+    string md5 = (string)ViewData["md5"];
+    string added_by = (string)ViewData["added_by"];
+
+    string limit = (string)ViewData["limit"];
+    string orderby = (string)ViewData["orderby"];
+    string orderdir = (string)ViewData["orderdir"];
 }
 
 <!-- Font Awesome -->
@@ -55,12 +62,53 @@
             <td style="white-space:nowrap"><input style="width: 300px;" placeholder="comma seperate multiple" class="form-control form-control-sm" type="text" name="tvdb" value="@tvdb_list"/></td>
         </tr>
         <tr>
+            <td style="white-space:nowrap">MD5</td>
+            <td style="white-space:nowrap"><input style="width: 300px;" placeholder="comma seperate multiple" class="form-control form-control-sm" type="text" name="md5" value="@md5"/></td>
+        </tr>
+        <tr>
+            <td style="white-space:nowrap">Added By</td>
+            <td style="white-space:nowrap"><input style="width: 300px;" placeholder="comma seperate multiple" class="form-control form-control-sm" type="text" name="added" value="@added_by"/></td>
+        </tr>
+        <tr>
+            <td style="white-space:nowrap">Limit</td>
+            <td style="white-space:nowrap">
+                <select class="form-control form-control-sm" name="limit">
+                    <!option value="10" @if(limit == "10"){ @selected }>10</!option>
+                    <!option value="50" @if(limit == "50"){ @selected }>50</!option>
+                    <!option value="100" @if(limit == "100"){ @selected }>100</!option>
+                    <!option value="0" @if(limit == "0"){ @selected }>All</!option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td style="white-space:nowrap">Order</td>
+            <td style="white-space:nowrap">
+                <table>
+                    <tr>
+                        <td>
+                            <select class="form-control form-control-sm" name="orderby">
+                                <!option value="0" @if(orderby == "0"){ @selected }>Date Added</!option>
+                                <!option value="1" @if(orderby == "1"){ @selected }>Date Edited</!option>
+                                <!option value="2" @if(orderby == "2"){ @selected }>Series Name</!option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-control form-control-sm" name="orderdir">
+                                <!option value="0" @if(orderdir == "0"){ @selected }>Descending</!option>
+                                <!option value="1" @if(orderdir == "1"){ @selected }>Assending</!option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
             <td style="white-space:nowrap"></td>
             <td style="white-space:nowrap"><input type="checkbox" name="download" value="true"/> Download results</td>
         </tr>
         <tr>
             <td style="white-space:nowrap"></td>
-            <td style="white-space:nowrap"><input class="form-control form-control-sm" type="submit"/></td>
+            <td style="white-space:nowrap"><input style="width: 150px;" class="form-control form-control-sm" type="submit" value="Submit"/></td>
         </tr>
     </table>
 
