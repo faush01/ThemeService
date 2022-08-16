@@ -119,15 +119,15 @@
 <table class="table table-sm">
     <thead>
         <tr>
-            <th scope="col"></th>
-            <th scope="col">Imdb</th>
-            <th scope="col">TheMovieDB</th>
-            <th scope="col">TheTvDB</th>
-            <th scope="col">Series Name</th>
-            <th scope="col">Season</th>
-            <th scope="col">Episode</th>
-            <th scope="col">Added By</th>
-            <th scope="col">Added</th>
+            <th scope="col" style="padding: 1px;"></th>
+            <th scope="col" style="padding: 1px;">Imdb</th>
+            <th scope="col" style="padding: 1px;">TheMovieDB</th>
+            <th scope="col" style="padding: 1px;">TheTvDB</th>
+            <th scope="col" style="padding: 1px;">Series Name</th>
+            <th scope="col" style="padding: 1px;">Season</th>
+            <th scope="col" style="padding: 1px;">Episode</th>
+            <th scope="col" style="padding: 1px;">Added By</th>
+            <th scope="col" style="padding: 1px;">Added</th>
         </tr>
     </thead>
 
@@ -136,19 +136,19 @@
     {
         <tr>
 
-            <td>
+            <td style="padding: 1px; white-space: nowrap;">
                 <a style="color:inherit;" href="@Url.Action("ShowItemInfo", "Home")/@theme.id"><i class="fas fa-eye" title="View"></i></a>
                 &nbsp;
                 <a style="color:inherit;" href="@Url.Action("DownloadItemInfo", "Home")/@theme.id"><i class="fas fa-download" title="Download"></i></a>
             </td>
-            <td>@theme.imdb</td>
-            <td>@theme.themoviedb</td>
-            <td>@theme.thetvdb</td>
-            <td>@theme.series_name</td>
-            <td>@theme.season</td>
-            <td>@theme.episode</td>
-            <td>@theme.added_by</td>
-            <td>@theme.added_date</td>
+            <td style="padding: 1px; white-space: nowrap;">@theme.imdb</td>
+            <td style="padding: 1px; white-space: nowrap;">@theme.themoviedb</td>
+            <td style="padding: 1px; white-space: nowrap;">@theme.thetvdb</td>
+            <td style="padding: 1px; white-space: nowrap;">@theme.series_name</td>
+            <td style="padding: 1px; white-space: nowrap;">@theme.season</td>
+            <td style="padding: 1px; white-space: nowrap;">@theme.episode</td>
+            <td style="padding: 1px; white-space: nowrap;">@theme.added_by</td>
+            <td style="padding: 1px; white-space: nowrap;">@theme.added_date</td>
         </tr>
     }
     </tbody>
