@@ -89,8 +89,9 @@ namespace ThemeService.Data
                     "episode",
                     "extract_length",
                     "theme_cp_data_size",
-                    "theme_cp_data_md5"//,
-                    //"theme_cp_data"
+                    "theme_cp_data_md5",
+                    "verify_count", // dynamic field
+                    "verify_users" // dynamic field
                 };
 
             if(options.CpData)
@@ -131,6 +132,10 @@ namespace ThemeService.Data
             {
                 where_clause.Add("added_by IN (" + ListToParamString(options.AddedBy) + ")");
             }
+            if(options.verify_min != null)
+            {
+                where_clause.Add("verify_count >= " + options.verify_min.Value);
+            }
 
             // this is to allow fast lookup of field indexes
             Dictionary<string, int> filed_ids = new Dictionary<string, int>();
@@ -147,10 +152,17 @@ namespace ThemeService.Data
             }
             
             sql += " " + string.Join(",", fields);
+
             sql += " FROM theme_data";
 
+            // add in user verification
+            sql += " LEFT OUTER JOIN (";
+            sql += "SELECT item_id, COUNT(DISTINCT(verified_by)) AS verify_count, STRING_AGG(verified_by, ',') AS verify_users ";
+            sql += "FROM theme_verify GROUP BY item_id";
+            sql += ") AS verification ON verification.item_id = theme_data.id";
+
             // add the where clause
-            if(where_clause.Count > 0)
+            if (where_clause.Count > 0)
             {
                 sql += " WHERE " + string.Join(" AND ", where_clause);
             }
@@ -184,6 +196,9 @@ namespace ThemeService.Data
                             data.added_date = reader.GetDateTime(filed_ids["added_date"]);
                             data.edit_date = reader.GetDateTime(filed_ids["edit_date"]);
 
+                            data.verify_count = GetInt(reader, filed_ids["verify_count"]);
+                            data.verify_users = GetString(reader, filed_ids["verify_users"]);
+
                             data.theme_cp_data_size = GetInt(reader, filed_ids["theme_cp_data_size"]);
                             data.theme_cp_data_md5 = GetString(reader, filed_ids["theme_cp_data_md5"]);
 
@@ -202,12 +217,21 @@ namespace ThemeService.Data
 
         public void DeleteTheme(int id)
         {
-            string sql = "DELETE FROM theme_data WHERE id = " + id;
             using (SqlConnection sql_conn = new SqlConnection(GetConnectionString()))
             {
                 sql_conn.Open();
-                using (SqlCommand command = new SqlCommand(sql, sql_conn))
+
+                string sql_theme_data = "DELETE FROM theme_data WHERE id = @id";
+                using (SqlCommand command = new SqlCommand(sql_theme_data, sql_conn))
                 {
+                    command.Parameters.AddWithValue("id", GetParamValue(id));
+                    command.ExecuteNonQuery();
+                }
+
+                string sql_theme_verify = "DELETE FROM theme_verify WHERE item_id = @item_id";
+                using (SqlCommand command = new SqlCommand(sql_theme_verify, sql_conn))
+                {
+                    command.Parameters.AddWithValue("item_id", GetParamValue(id));
                     command.ExecuteNonQuery();
                 }
             }
@@ -297,6 +321,73 @@ namespace ThemeService.Data
             }
 
             return -1;
+        }
+
+        public void RemoveVerification(int item_id, string user_id)
+        {
+            
+            using (SqlConnection sql_conn = new SqlConnection(GetConnectionString()))
+            {
+                sql_conn.Open();
+
+                string sql = "DELETE FROM theme_verify WHERE item_id = @item_id AND verified_by = @verified_by";
+                using (SqlCommand command = new SqlCommand(sql, sql_conn))
+                {
+                    command.Parameters.AddWithValue("item_id", GetParamValue(item_id));
+                    command.Parameters.AddWithValue("verified_by", GetParamValue(user_id));
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public int AddVerification(int item_id, string user_id)
+        {
+            using (SqlConnection sql_conn = new SqlConnection(GetConnectionString()))
+            {
+                sql_conn.Open();
+
+                string search_sql = "SELECT id FROM theme_verify WHERE item_id = @item_id AND verified_by = @verified_by";
+
+                using (SqlCommand command = new SqlCommand(search_sql, sql_conn))
+                {
+                    command.Parameters.AddWithValue("item_id", GetParamValue(item_id));
+                    command.Parameters.AddWithValue("verified_by", GetParamValue(user_id));
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.HasRows)
+                        {
+                            reader.Read();
+                            return reader.GetInt32(0);
+                        }
+                    }
+                }
+
+                string sql = "INSERT INTO theme_verify (item_id, verified_by) VALUES(@item_id, @verified_by);";
+                using (SqlCommand command = new SqlCommand(sql, sql_conn))
+                {
+                    command.Parameters.AddWithValue("item_id", GetParamValue(item_id));
+                    command.Parameters.AddWithValue("verified_by", GetParamValue(user_id));
+                    command.ExecuteNonQuery();
+                }
+
+                using (SqlCommand command = new SqlCommand(search_sql, sql_conn))
+                {
+                    command.Parameters.AddWithValue("item_id", GetParamValue(item_id));
+                    command.Parameters.AddWithValue("verified_by", GetParamValue(user_id));
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.HasRows)
+                        {
+                            reader.Read();
+                            return reader.GetInt32(0);
+                        }
+                    }
+                }
+
+                return -1;
+            }
         }
     }
 }

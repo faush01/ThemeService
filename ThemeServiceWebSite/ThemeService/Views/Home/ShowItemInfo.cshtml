@@ -29,16 +29,41 @@ function enable_save() {
     document.getElementById("save_button").disabled = false;
 }
 
+function verify_action(action) {
+    if (action === "add") { 
+        window.location.href = '@Url.Action("AddThemeVerification", "Home")?item_id=@theme_data.id';
+	}
+	else if(action === "remove") {
+		window.location.href = '@Url.Action("RemoveVerification", "Home")?item_id=@theme_data.id';
+	}
+	
+}
+
 </script>
 
-<h4>Theme Info</h4>
+<h4>Theme Info</h4> 
 
-@if(admin)
+@if(user_info.IsAuthenticated)
 {
 	<table>
 		<tr>
-			<td><button class="form-control form-control-sm" onclick="submit_form();" id="save_button" disabled>Save</button></td>
-			<td><button class="form-control form-control-sm" onclick="delete_action();">Delete</button></td>
+			@if(admin)
+			{
+				<td><button class="form-control form-control-sm" onclick="submit_form();" id="save_button" disabled>Save</button></td>
+				<td><button class="form-control form-control-sm" onclick="delete_action();">Delete</button></td>
+				<td><button class="form-control form-control-sm" disabled>Verify</button></td>
+			}
+			else
+			{
+				@if (!string.IsNullOrEmpty(theme_data.verify_users) && theme_data.verify_users.IndexOf(user_info.LoginId) > -1)
+				{
+					<td><button class="form-control form-control-sm" onclick="verify_action('remove');" id="verify_button">Unverify</button></td>
+				}
+				else
+				{
+					<td><button class="form-control form-control-sm" onclick="verify_action('add');" id="verify_button">Verify</button></td>
+				}
+			}
 		</tr>
 	</table>
 }
@@ -151,6 +176,15 @@ function enable_save() {
 	<tr>
 		<td style="white-space:nowrap">Edit</td>
 		<td>@theme_data.edit_date</td>
+	</tr>
+	<tr>
+		<td style="white-space:nowrap">Verified By</td>
+		<td>
+			@if (!string.IsNullOrEmpty(theme_data.verify_users))
+			{
+				@theme_data.verify_users.Replace(",", " ");
+			}
+		</td>
 	</tr>
 	<tr>
 		<td style="white-space:nowrap">Chromaprint Size</td>

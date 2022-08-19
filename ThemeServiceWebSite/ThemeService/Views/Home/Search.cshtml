@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Search";
     string selected = "selected";
+    string item_checked = "checked";
 
     List<ThemeData> theme_list = (List<ThemeData>)ViewData["theme_list"];
     if(theme_list == null)
@@ -14,9 +15,11 @@
     string md5 = (string)ViewData["md5"];
     string added_by = (string)ViewData["added_by"];
 
+    string verified = (string)ViewData["verified"];
     string limit = (string)ViewData["limit"];
     string orderby = (string)ViewData["orderby"];
     string orderdir = (string)ViewData["orderdir"];
+
 }
 
 <!-- Font Awesome -->
@@ -104,6 +107,10 @@
         </tr>
         <tr>
             <td style="white-space:nowrap"></td>
+            <td style="white-space:nowrap"><!input type="checkbox" name="verified" value="true" @if(verified == "true") { @item_checked }/> Only include verified</td>
+        </tr>
+        <tr>
+            <td style="white-space:nowrap"></td>
             <td style="white-space:nowrap"><input type="checkbox" name="download" value="true"/> Download results</td>
         </tr>
         <tr>
@@ -128,6 +135,7 @@
             <th scope="col" style="padding: 1px;">Episode</th>
             <th scope="col" style="padding: 1px;">Added By</th>
             <th scope="col" style="padding: 1px;">Added</th>
+            <th scope="col" style="padding: 1px;">Verified</th>
         </tr>
     </thead>
 
@@ -148,7 +156,8 @@
             <td style="padding: 1px; white-space: nowrap;">@theme.season</td>
             <td style="padding: 1px; white-space: nowrap;">@theme.episode</td>
             <td style="padding: 1px; white-space: nowrap;">@theme.added_by</td>
-            <td style="padding: 1px; white-space: nowrap;">@theme.added_date</td>
+            <td style="padding: 1px; white-space: nowrap;">@theme.added_date.Value.ToString("dd-MMM-yy")</td>
+            <td style="padding: 1px; white-space: nowrap;">@theme.verify_count</td>
         </tr>
     }
     </tbody>

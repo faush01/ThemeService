@@ -34,3 +34,20 @@ INSERT INTO theme_data (imdb, themoviedb, thetvdb, series_name, theme_cp_data, a
 VALUES ('tt5171438', '67198', '328711', 'ST Discovery', 'some base64 data here', 'test_user');
 
 select * from theme_data;
+
+-- create verify table
+
+DROP TABLE theme_verify;
+CREATE TABLE theme_verify 
+( 
+   id int IDENTITY(1,1) NOT NULL,
+   item_id int NOT NULL,
+   verified_by varchar(256),
+   date_verified DateTime DEFAULT GETDATE() NOT NULL
+);
+ALTER TABLE theme_verify ADD CONSTRAINT pk_theme_verify_id PRIMARY KEY(id);
+
+INSERT INTO theme_verify (item_id, verified_by)
+VALUES (10, 'faush01');
+
+SELECT * FROM theme_verify;

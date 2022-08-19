@@ -121,6 +121,51 @@ namespace ThemeService.Controllers
             }
         }
 
+        public IActionResult RemoveVerification(int item_id)
+        {
+            GitHubUser user_info = Utils.UserDetails.GetUserInfo(User);
+            ViewData["user_info"] = user_info;
+
+            if (user_info.IsAuthenticated == false)
+            {
+                return RedirectToAction("Login", "Account", new { returnUrl = Url.Action("ShowItemInfo", "Home", new { id = item_id }) });
+            }
+
+            Store store = new Store(_config);
+            store.RemoveVerification(item_id, user_info.LoginId);
+
+            return RedirectToAction("ShowItemInfo", "Home", new { id = item_id });
+        }
+
+        public IActionResult AddThemeVerification(int item_id)
+        {
+            GitHubUser user_info = Utils.UserDetails.GetUserInfo(User);
+            ViewData["user_info"] = user_info;
+
+            if (user_info.IsAuthenticated == false)
+            {
+                return RedirectToAction("Login", "Account", new { returnUrl = Url.Action("ShowItemInfo", "Home", new { id = item_id }) });
+            }
+
+            Store store = new Store(_config);
+
+            ThemeQueryOptions options = new ThemeQueryOptions();
+            options.CpData = false;
+            options.Id.Add(item_id.ToString());
+
+            List<ThemeData> theme_list = store.GetThemeDataList(options);
+            if(theme_list.Count > 0)
+            {
+                ThemeData item = theme_list[0];
+                if (item.added_by != user_info.LoginId)
+                {
+                    store.AddVerification(item_id, user_info.LoginId);
+                }
+            }
+
+            return RedirectToAction("ShowItemInfo", "Home", new { id = item_id });
+        }
+
         public IActionResult DownloadItemInfo(int id)
         {
             ThemeData theme_data = new ThemeData();
@@ -155,6 +200,7 @@ namespace ThemeService.Controllers
             string limit,
             string orderby,
             string orderdir,
+            string verified,
             string download)
         {
             GitHubUser user_info = Utils.UserDetails.GetUserInfo(User);
@@ -199,6 +245,12 @@ namespace ThemeService.Controllers
                 options.OrderByDirection = (OrderByDirection)int_val;
             }
 
+            bool only_verified = !string.IsNullOrEmpty(verified) && verified.Equals("true", StringComparison.InvariantCultureIgnoreCase);
+            if(only_verified)
+            {
+                options.verify_min = 1;
+            }
+            
             List<ThemeData> theme_list = store.GetThemeDataList(options);
 
             // download or view
@@ -217,6 +269,7 @@ namespace ThemeService.Controllers
                 ViewData["md5"] = md5;
                 ViewData["added_by"] = added;
                 ViewData["limit"] = limit;
+                ViewData["verified"] = verified;
                 ViewData["orderby"] = orderby;
                 ViewData["orderdir"] = orderdir;
 
