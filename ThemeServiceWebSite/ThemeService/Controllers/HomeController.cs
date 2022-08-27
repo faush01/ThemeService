@@ -231,6 +231,11 @@ namespace ThemeService.Controllers
                 options.Limit = int_val;
             }
 
+            if(do_down && string.IsNullOrEmpty(limit)) // if doing download and no limit then return all items
+            {
+                options.Limit = 0;
+            }
+
             if(!string.IsNullOrEmpty(orderby))
             {
                 int int_val = 0;
