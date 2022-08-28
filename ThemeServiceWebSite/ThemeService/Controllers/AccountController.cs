@@ -9,14 +9,23 @@ namespace ThemeService.Controllers
     {
 
         [HttpGet]
-        public IActionResult Login(string returnUrl = "/")
+        public IActionResult Login(string returnUrl)
         {
+            if(string.IsNullOrEmpty(returnUrl) && Request.Headers.ContainsKey("Referer"))
+            {
+                returnUrl = Request.Headers["Referer"];
+            }
+            if(string.IsNullOrEmpty(returnUrl))
+            {
+                returnUrl = "/";
+            }
             return Challenge(new AuthenticationProperties() { RedirectUri = returnUrl });
         }
 
         public IActionResult Logout()
         {
-            return SignOut(new AuthenticationProperties { RedirectUri = "/" },
+            string returnUrl = "/";
+            return SignOut(new AuthenticationProperties { RedirectUri = returnUrl },
                 CookieAuthenticationDefaults.AuthenticationScheme);
         }
 

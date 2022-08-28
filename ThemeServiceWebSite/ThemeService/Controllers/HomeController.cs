@@ -128,7 +128,7 @@ namespace ThemeService.Controllers
 
             if (user_info.IsAuthenticated == false)
             {
-                return RedirectToAction("Login", "Account", new { returnUrl = Url.Action("ShowItemInfo", "Home", new { id = item_id }) });
+                return RedirectToAction("Login", "Account");
             }
 
             Store store = new Store(_config);
@@ -144,7 +144,7 @@ namespace ThemeService.Controllers
 
             if (user_info.IsAuthenticated == false)
             {
-                return RedirectToAction("Login", "Account", new { returnUrl = Url.Action("ShowItemInfo", "Home", new { id = item_id }) });
+                return RedirectToAction("Login", "Account");
             }
 
             Store store = new Store(_config);
@@ -385,6 +385,16 @@ namespace ThemeService.Controllers
             theme.series_name = TrimString(form_data["series_name"]);
             theme.added_by = user_info.LoginId;
 
+            if(theme.extract_length == null)
+            {
+                messages.Add("Extraction length is a required field");
+            }
+
+            if(string.IsNullOrEmpty(theme.imdb))
+            {
+                messages.Add("Imdb ID is a required field.");
+            }
+
             string filename = null;
             byte[] cp_bytes = null;
             if (form_data.Files.Count > 0)
@@ -469,7 +479,18 @@ namespace ThemeService.Controllers
                 messages.Add("File has no usable data");
             }
 
-            if(messages.Count == 0)
+            // verify theme cp length vs extraction length
+            int extract_len = theme.extract_length ?? 0;
+            int cp_data_size = theme.theme_cp_data_size ?? 0;
+            // 32 bytes per sec based on testing, extract need to be at least 1.5 times longer then the actual intro
+            double cp_len_min_double = ((cp_data_size / 32.0) / 60.0) * 1.5;
+            int cp_len_min = (int)Math.Ceiling(cp_len_min_double);
+            if (cp_len_min >= extract_len)
+            {
+                messages.Add("Extraction length is not valid, it should be at least the intro length + the intro start offset.");
+            }
+
+            if (messages.Count == 0)
             {
                 // add theme
                 Store store = new Store(_config);
