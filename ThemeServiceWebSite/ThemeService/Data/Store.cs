@@ -78,9 +78,11 @@ namespace ThemeService.Data
             List<string> fields = new List<string>()
                 {
                     "id",
+                    "hidden",
                     "added_date",
                     "added_by",
                     "edit_date",
+                    "edit_by",
                     "imdb",
                     "themoviedb",
                     "thetvdb",
@@ -136,6 +138,15 @@ namespace ThemeService.Data
             {
                 where_clause.Add("verify_count >= " + options.verify_min.Value);
             }
+            // hidden or not
+            if(options.hidden == false)
+            {
+                where_clause.Add("hidden = 0");
+            }
+            else if (options.hidden == true)
+            {
+                where_clause.Add("hidden = 1");
+            }
 
             // this is to allow fast lookup of field indexes
             Dictionary<string, int> filed_ids = new Dictionary<string, int>();
@@ -182,6 +193,7 @@ namespace ThemeService.Data
                             ThemeData data = new ThemeData();
 
                             data.id = reader.GetInt32(filed_ids["id"]);
+                            data.hidden = reader.GetBoolean(filed_ids["hidden"]);
 
                             data.imdb = GetString(reader, filed_ids["imdb"]);
                             data.thetvdb = GetString(reader, filed_ids["thetvdb"]);
@@ -195,6 +207,7 @@ namespace ThemeService.Data
                             data.added_by = GetString(reader, filed_ids["added_by"]);
                             data.added_date = reader.GetDateTime(filed_ids["added_date"]);
                             data.edit_date = reader.GetDateTime(filed_ids["edit_date"]);
+                            data.edit_by = GetString(reader, filed_ids["edit_by"]);
 
                             data.verify_count = GetInt(reader, filed_ids["verify_count"]);
                             data.verify_users = GetString(reader, filed_ids["verify_users"]);
@@ -215,12 +228,21 @@ namespace ThemeService.Data
             return theme_data_list;
         }
 
-        public void DeleteTheme(int id)
+        public void HideTheme(int id, string login_id)
         {
             using (SqlConnection sql_conn = new SqlConnection(GetConnectionString()))
             {
                 sql_conn.Open();
 
+                string sql_theme_data = "UPDATE theme_data SET hidden=1, edit_by=@edit_by, edit_date=GETDATE() WHERE id = @id";
+                using (SqlCommand command = new SqlCommand(sql_theme_data, sql_conn))
+                {
+                    command.Parameters.AddWithValue("id", GetParamValue(id));
+                    command.Parameters.AddWithValue("edit_by", GetParamValue(login_id));
+                    command.ExecuteNonQuery();
+                }
+
+                /*
                 string sql_theme_data = "DELETE FROM theme_data WHERE id = @id";
                 using (SqlCommand command = new SqlCommand(sql_theme_data, sql_conn))
                 {
@@ -232,6 +254,82 @@ namespace ThemeService.Data
                 using (SqlCommand command = new SqlCommand(sql_theme_verify, sql_conn))
                 {
                     command.Parameters.AddWithValue("item_id", GetParamValue(id));
+                    command.ExecuteNonQuery();
+                }
+                */
+            }
+        }
+
+        public List<ThemeData> GetThemeHistory(int id)
+        {
+            string sql = "SELECT item_id, edit_date, edit_by, hidden, imdb, themoviedb, thetvdb, series_name, season, episode, extract_length " +
+                "FROM theme_history " +
+                "WHERE item_id=@item_id " +
+                "ORDER BY edit_date DESC";
+
+            List<ThemeData> history_data = new List<ThemeData>();
+            using (SqlConnection sql_conn = new SqlConnection(GetConnectionString()))
+            {
+                sql_conn.Open();
+
+                using (SqlCommand command = new SqlCommand(sql, sql_conn))
+                {
+                    command.Parameters.AddWithValue("item_id", GetParamValue(id));
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            ThemeData data = new ThemeData();
+
+                            data.id = reader.GetInt32(0);
+                            data.edit_date = reader.GetDateTime(1);
+                            data.edit_by = GetString(reader, 2);
+
+                            data.hidden = reader.GetBoolean(3);
+
+                            data.imdb = GetString(reader, 4);
+                            data.themoviedb = GetString(reader, 5);
+                            data.thetvdb = GetString(reader, 6);
+
+                            data.series_name = GetString(reader, 7);
+
+                            data.season = GetInt(reader, 8);
+                            data.episode = GetInt(reader, 9);
+                            data.extract_length = GetInt(reader, 10);
+
+                            history_data.Add(data);
+                        }
+                    }
+                }
+            }
+            return history_data;
+        }
+
+        public void LogHistory(ThemeData theme_data)
+        {
+            string sql = "INSERT INTO theme_history (item_id, edit_date, edit_by, hidden, imdb, themoviedb, thetvdb, series_name, season, episode, extract_length) " +
+                "VALUES (@item_id, @edit_date, @edit_by, @hidden, @imdb, @themoviedb, @thetvdb, @series_name, @season, @episode, @extract_length);";
+
+            using (SqlConnection sql_conn = new SqlConnection(GetConnectionString()))
+            {
+                sql_conn.Open();
+                using (SqlCommand command = new SqlCommand(sql, sql_conn))
+                {
+                    command.Parameters.AddWithValue("item_id", GetParamValue(theme_data.id));
+                    command.Parameters.AddWithValue("edit_date", GetParamValue(theme_data.edit_date));
+                    command.Parameters.AddWithValue("edit_by", GetParamValue(theme_data.edit_by));
+                    command.Parameters.AddWithValue("hidden", GetParamValue(theme_data.hidden));
+
+                    command.Parameters.AddWithValue("imdb", GetParamValue(theme_data.imdb));
+                    command.Parameters.AddWithValue("themoviedb", GetParamValue(theme_data.themoviedb));
+                    command.Parameters.AddWithValue("thetvdb", GetParamValue(theme_data.thetvdb));
+
+                    command.Parameters.AddWithValue("series_name", GetParamValue(theme_data.series_name));
+                    command.Parameters.AddWithValue("season", GetParamValue(theme_data.season));
+                    command.Parameters.AddWithValue("episode", GetParamValue(theme_data.episode));
+                    command.Parameters.AddWithValue("extract_length", GetParamValue(theme_data.extract_length));
+
                     command.ExecuteNonQuery();
                 }
             }
@@ -247,7 +345,8 @@ namespace ThemeService.Data
                 "episode=@episode, " +
                 "extract_length=@extract_length, " +
                 "series_name=@series_name, " +
-                "edit_date=GETDATE() " +
+                "edit_date=GETDATE(), " +
+                "edit_by=@edit_by " +
                 "WHERE id=@id";
             using (SqlConnection sql_conn = new SqlConnection(GetConnectionString()))
             {
@@ -262,6 +361,7 @@ namespace ThemeService.Data
                     command.Parameters.AddWithValue("extract_length", GetParamValue(theme_data.extract_length));
                     command.Parameters.AddWithValue("episode", GetParamValue(theme_data.episode));
                     command.Parameters.AddWithValue("series_name", GetParamValue(theme_data.series_name));
+                    command.Parameters.AddWithValue("edit_by", GetParamValue(theme_data.edit_by));
                     command.ExecuteNonQuery();
                 }
             }

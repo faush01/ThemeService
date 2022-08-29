@@ -4,25 +4,24 @@
 	ThemeData theme_data = (ThemeData)ViewData["theme_data"];
 	GitHubUser user_info = (GitHubUser)ViewData["user_info"];
 
-	bool admin = false;
-	if(	!string.IsNullOrEmpty(user_info.LoginId) && 
-		!string.IsNullOrEmpty(theme_data.added_by) && 
-		user_info.LoginId == theme_data.added_by)
-	{
-		admin = true;
-	}
 }
 
 <script>
 
-function delete_action() {
-	if(confirm('Are you sure you want to delete this item?')) {
-		window.location.href = '@Url.Action("DeleteTheme", "Home")?id=@theme_data.id'
+function history_action() {
+	window.location.href = '@Url.Action("ItemHistory", "Home")?id=@theme_data.id'
+}
+
+function hide_action() {
+	if(confirm('Confirm hide item?')) {
+		window.location.href = '@Url.Action("HideTheme", "Home")?id=@theme_data.id'
 	}
 }
 
 function submit_form() {
-	document.getElementById("edit_form").submit();
+	if(confirm('Confirm save?')) {
+		document.getElementById("edit_form").submit();
+	}
 }
 
 function enable_save() {
@@ -43,30 +42,36 @@ function verify_action(action) {
 
 <h4>Theme Info</h4> 
 
-@if(user_info.IsAuthenticated)
-{
-	<table>
-		<tr>
-			@if(admin)
-			{
-				<td><button class="form-control form-control-sm" onclick="submit_form();" id="save_button" disabled>Save</button></td>
-				<td><button class="form-control form-control-sm" onclick="delete_action();">Delete</button></td>
-				<td><button class="form-control form-control-sm" disabled>Verify</button></td>
-			}
-			else
-			{
-				@if (!string.IsNullOrEmpty(theme_data.verify_users) && theme_data.verify_users.IndexOf(user_info.LoginId) > -1)
-				{
-					<td><button class="form-control form-control-sm" onclick="verify_action('remove');" id="verify_button">Unverify</button></td>
-				}
-				else
-				{
-					<td><button class="form-control form-control-sm" onclick="verify_action('add');" id="verify_button">Verify</button></td>
-				}
-			}
-		</tr>
-	</table>
-}
+<table>
+	<tr>
+
+	@if(user_info.IsAuthenticated)
+	{
+		<td><button class="form-control form-control-sm" onclick="submit_form();" id="save_button" disabled>Save</button></td>
+
+		@if(theme_data.hidden)
+		{
+			<td><button class="form-control form-control-sm" disabled>Hide</button></td>
+		}
+		else
+		{
+			<td><button class="form-control form-control-sm" onclick="hide_action();">Hide</button></td>
+		}
+
+		@if (!string.IsNullOrEmpty(theme_data.verify_users) && theme_data.verify_users.IndexOf(user_info.LoginId) > -1)
+		{
+			<td><button class="form-control form-control-sm" onclick="verify_action('remove');" id="verify_button">Unverify</button></td>
+		}
+		else
+		{
+			<td><button class="form-control form-control-sm" onclick="verify_action('add');" id="verify_button">Verify</button></td>
+		}
+	}
+
+		<td><button class="form-control form-control-sm" onclick="history_action();">History</button></td>
+
+	</tr>
+</table>
 
 <form method="POST" action="@Url.Action("UpdateTheme", "Home")" id="edit_form">
 
@@ -76,9 +81,9 @@ function verify_action(action) {
 	<tr>
 		<td style="white-space:nowrap">Imbd</td>
 		<td style="width: 95%;">
-			@if(admin)
+			@if(user_info.IsAuthenticated)
 			{
-				<input class="form-control form-control-sm" type="text" name="imdb" value="@theme_data.imdb" onchange="enable_save();" />
+				<input class="form-control form-control-sm" type="text" name="imdb" value="@theme_data.imdb" oninput="enable_save();" />
 			}
 			else
 			{
@@ -89,9 +94,9 @@ function verify_action(action) {
 	<tr>
 		<td style="white-space:nowrap">TheMovieDB</td>
 		<td>
-			@if(admin)
+			@if(user_info.IsAuthenticated)
 			{
-				<input class="form-control form-control-sm" type="text" name="themoviedb" value="@theme_data.themoviedb" onchange="enable_save();" />
+				<input class="form-control form-control-sm" type="text" name="themoviedb" value="@theme_data.themoviedb" oninput="enable_save();" />
 			}
 			else
 			{
@@ -102,23 +107,22 @@ function verify_action(action) {
 	<tr>
 		<td style="white-space:nowrap">TheTvDB</td>
 		<td>
-			@if(admin)
+			@if(user_info.IsAuthenticated)
 			{
-				<input class="form-control form-control-sm" type="text" name="thetvdb" value="@theme_data.thetvdb" onchange="enable_save();" />
+				<input class="form-control form-control-sm" type="text" name="thetvdb" value="@theme_data.thetvdb" oninput="enable_save();" />
 			}
 			else
 			{
 				<a href="https://thetvdb.com/?tab=series&id=@theme_data.thetvdb" target="_blank">@theme_data.thetvdb</a>
-				
 			}
 		</td>
 	</tr>
 	<tr>
 		<td style="white-space:nowrap">Series Name</td>
 		<td>
-			@if(admin)
+			@if(user_info.IsAuthenticated)
 			{	
-				<input class="form-control form-control-sm" type="text" name="series_name" value="@theme_data.series_name" onchange="enable_save();" />
+				<input class="form-control form-control-sm" type="text" name="series_name" value="@theme_data.series_name" oninput="enable_save();" />
 			}
 			else
 			{
@@ -129,9 +133,9 @@ function verify_action(action) {
 	<tr>
 		<td style="white-space:nowrap">Season</td>
 		<td>
-			@if(admin)
+			@if(user_info.IsAuthenticated)
 			{
-				<input class="form-control form-control-sm" type="text" name="season" value="@theme_data.season" onchange="enable_save();" />
+				<input class="form-control form-control-sm" type="text" name="season" value="@theme_data.season" oninput="enable_save();" />
 			}
 			else
 			{
@@ -142,9 +146,9 @@ function verify_action(action) {
 	<tr>
 		<td style="white-space:nowrap">Episode</td>
 		<td>
-			@if(admin)
+			@if(user_info.IsAuthenticated)
 			{	
-				<input class="form-control form-control-sm" type="text" name="episode" value="@theme_data.episode" onchange="enable_save();" />
+				<input class="form-control form-control-sm" type="text" name="episode" value="@theme_data.episode" oninput="enable_save();" />
 			}
 			else
 			{
@@ -155,9 +159,9 @@ function verify_action(action) {
 	<tr>
 		<td style="white-space:nowrap">Extract Length (minutes)</td>
 		<td>
-			@if(admin)
+			@if(user_info.IsAuthenticated)
 			{	
-				<input class="form-control form-control-sm" type="text" name="extract_length" value="@theme_data.extract_length" onchange="enable_save();" />
+				<input class="form-control form-control-sm" type="text" name="extract_length" value="@theme_data.extract_length" oninput="enable_save();" />
 			}
 			else
 			{
@@ -166,16 +170,16 @@ function verify_action(action) {
 		</td>
 	</tr>
 	<tr>
-		<td style="white-space:nowrap">Added By</td>
-		<td>@theme_data.added_by</td>
+		<td style="white-space:nowrap">Hidden</td>
+		<td>@theme_data.hidden</td>
 	</tr>
 	<tr>
 		<td style="white-space:nowrap">Added</td>
-		<td>@theme_data.added_date</td>
+		<td>@theme_data.added_date.Value.ToString("yyyy-MM-dd HH:mm:ss") (@theme_data.added_by)</td>
 	</tr>
 	<tr>
 		<td style="white-space:nowrap">Edit</td>
-		<td>@theme_data.edit_date</td>
+		<td>@theme_data.edit_date.Value.ToString("yyyy-MM-dd HH:mm:ss") (@theme_data.edit_by)</td>
 	</tr>
 	<tr>
 		<td style="white-space:nowrap">Verified By</td>

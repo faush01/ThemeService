@@ -1,0 +1,48 @@
+﻿@{
+
+	List<ThemeData> history_data = (List<ThemeData>)ViewData["history"];
+	if(history_data == null)
+	{
+		history_data = new List<ThemeData>();
+	}
+}
+
+<h4>Item History</h4>
+
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th scope="col" style="padding: 1px;">Edited</th>
+            <th scope="col" style="padding: 1px;">Hidden</th>
+            <th scope="col" style="padding: 1px;">Imdb</th>
+            <th scope="col" style="padding: 1px;">TheMovieDB</th>
+            <th scope="col" style="padding: 1px;">TheTvDB</th>
+            <th scope="col" style="padding: 1px;">Series Name</th>
+            <th scope="col" style="padding: 1px;">Season</th>
+            <th scope="col" style="padding: 1px;">Episode</th>
+            <th scope="col" style="padding: 1px;">Extract</th>
+            
+        </tr>
+    </thead>
+
+    <tbody>
+    @foreach(ThemeData theme in history_data)
+    {
+        <tr>
+
+            <td style="padding: 1px; white-space: nowrap;">@theme.edit_date (@theme.edit_by)</td>
+            <td style="padding: 1px; white-space: nowrap;">@theme.hidden</td>
+            <td style="padding: 1px; white-space: nowrap;">@theme.imdb</td>
+            <td style="padding: 1px; white-space: nowrap;">@theme.themoviedb</td>
+            <td style="padding: 1px; white-space: nowrap;">@theme.thetvdb</td>
+            <td style="padding: 1px; white-space: nowrap;">@theme.series_name</td>
+            <td style="padding: 1px; white-space: nowrap;">@theme.season</td>
+            <td style="padding: 1px; white-space: nowrap;">@theme.episode</td>
+            <td style="padding: 1px; white-space: nowrap;">@theme.extract_length</td>
+
+        </tr>
+    }
+    </tbody>
+</table>
+
+

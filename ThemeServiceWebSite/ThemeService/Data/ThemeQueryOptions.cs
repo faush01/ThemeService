@@ -27,6 +27,7 @@ namespace ThemeService.Data
         public List<string> Md5 { get; set; } = new List<string>();
         public string SerieName { get; set; }
         public int? verify_min { get; set; }
+        public bool? hidden { get; set; } = false;
         public int Limit { get; set; } = 10;
         public OrderBy OrderBy { get; set; } = OrderBy.added_date;
         public OrderByDirection OrderByDirection { get; set; } = OrderByDirection.DESC;

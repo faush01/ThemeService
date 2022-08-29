@@ -16,6 +16,7 @@
     string added_by = (string)ViewData["added_by"];
 
     string verified = (string)ViewData["verified"];
+    string hidden = (string)ViewData["hidden"];
     string limit = (string)ViewData["limit"];
     string orderby = (string)ViewData["orderby"];
     string orderdir = (string)ViewData["orderdir"];
@@ -111,6 +112,10 @@
         </tr>
         <tr>
             <td style="white-space:nowrap"></td>
+            <td style="white-space:nowrap"><!input type="checkbox" name="hidden" value="true" @if(hidden == "true") { @item_checked }/> Only include hidden</td>
+        </tr>
+        <tr>
+            <td style="white-space:nowrap"></td>
             <td style="white-space:nowrap"><input type="checkbox" name="download" value="true"/> Download results</td>
         </tr>
         <tr>
@@ -133,7 +138,6 @@
             <th scope="col" style="padding: 1px;">Series Name</th>
             <th scope="col" style="padding: 1px;">Season</th>
             <th scope="col" style="padding: 1px;">Episode</th>
-            <th scope="col" style="padding: 1px;">Added By</th>
             <th scope="col" style="padding: 1px;">Added</th>
             <th scope="col" style="padding: 1px;">Verified</th>
         </tr>
@@ -149,14 +153,19 @@
                 &nbsp;
                 <a style="color:inherit;" href="@Url.Action("DownloadItemInfo", "Home")/@theme.id"><i class="fas fa-download" title="Download"></i></a>
             </td>
-            <td style="padding: 1px; white-space: nowrap;">@theme.imdb</td>
-            <td style="padding: 1px; white-space: nowrap;">@theme.themoviedb</td>
-            <td style="padding: 1px; white-space: nowrap;">@theme.thetvdb</td>
+            <td style="padding: 1px; white-space: nowrap;">
+                <a href="https://www.imdb.com/title/@theme.imdb" target="_blank">@theme.imdb</a>
+            </td>
+            <td style="padding: 1px; white-space: nowrap;">
+                <a href="https://www.themoviedb.org/tv/@theme.themoviedb" target="_blank">@theme.themoviedb</a>
+            </td>
+            <td style="padding: 1px; white-space: nowrap;">
+                <a href="https://thetvdb.com/?tab=series&id=@theme.thetvdb" target="_blank">@theme.thetvdb</a>
+            </td>
             <td style="padding: 1px; white-space: nowrap;">@theme.series_name</td>
             <td style="padding: 1px; white-space: nowrap;">@theme.season</td>
             <td style="padding: 1px; white-space: nowrap;">@theme.episode</td>
-            <td style="padding: 1px; white-space: nowrap;">@theme.added_by</td>
-            <td style="padding: 1px; white-space: nowrap;">@theme.added_date.Value.ToString("dd-MMM-yy")</td>
+            <td style="padding: 1px; white-space: nowrap;">@theme.added_date.Value.ToString("yyyy-MM-dd HH:mm")</td>
             <td style="padding: 1px; white-space: nowrap;">@theme.verify_count</td>
         </tr>
     }

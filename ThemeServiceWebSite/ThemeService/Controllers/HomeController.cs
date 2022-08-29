@@ -157,7 +157,7 @@ namespace ThemeService.Controllers
             if(theme_list.Count > 0)
             {
                 ThemeData item = theme_list[0];
-                if (item.added_by != user_info.LoginId)
+                if (item.added_by.Equals(user_info.LoginId, StringComparison.OrdinalIgnoreCase) == false)
                 {
                     store.AddVerification(item_id, user_info.LoginId);
                 }
@@ -201,17 +201,20 @@ namespace ThemeService.Controllers
             string orderby,
             string orderdir,
             string verified,
-            string download)
+            string download,
+            string hidden)
         {
             GitHubUser user_info = Utils.UserDetails.GetUserInfo(User);
             ViewData["user_info"] = user_info;
 
             bool do_down = !string.IsNullOrEmpty(download) && download.Equals("true", StringComparison.InvariantCultureIgnoreCase);
+            bool show_hidden = !string.IsNullOrEmpty(hidden) && hidden.Equals("true", StringComparison.InvariantCultureIgnoreCase);
 
             Store store = new Store(_config);
 
             ThemeQueryOptions options = new ThemeQueryOptions();
             options.CpData = do_down;
+            options.hidden = show_hidden;
 
             options.SerieName = name;
 
@@ -277,7 +280,7 @@ namespace ThemeService.Controllers
                 ViewData["verified"] = verified;
                 ViewData["orderby"] = orderby;
                 ViewData["orderdir"] = orderdir;
-
+                ViewData["hidden"] = hidden;
                 ViewData["theme_list"] = theme_list;
 
                 return View();
@@ -316,6 +319,7 @@ namespace ThemeService.Controllers
 
                 ThemeQueryOptions options = new ThemeQueryOptions();
                 options.CpData = true;
+                options.hidden = null;
                 options.Id.Add(id.ToString());
 
                 List<ThemeData> theme_list = store.GetThemeDataList(options);
@@ -329,7 +333,7 @@ namespace ThemeService.Controllers
             return View();
         }
 
-        public IActionResult DeleteTheme(int id)
+        public IActionResult HideTheme(int id)
 		{
             GitHubUser user_info = Utils.UserDetails.GetUserInfo(User);
             if (user_info.IsAuthenticated == false)
@@ -352,13 +356,11 @@ namespace ThemeService.Controllers
 
             if(theme != null)
 			{
-                if(theme.added_by == user_info.LoginId)
-                {
-                    store.DeleteTheme(id);
-                }
+                store.LogHistory(theme);
+                store.HideTheme(id, user_info.LoginId);
             }
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("ShowItemInfo", "Home", new { id = id });
         }
 
         public IActionResult AddNewTheme(IFormCollection form_data)
@@ -559,10 +561,7 @@ namespace ThemeService.Controllers
 
             ThemeData theme = theme_list[0];
 
-            if(theme.added_by != user_info.LoginId)
-			{
-                return RedirectToAction("ShowItemInfo", "Home", new { id = theme.id });
-            }
+            store.LogHistory(theme);
 
             theme.imdb = TrimString(form_data["imdb"]);
             theme.themoviedb = TrimString(form_data["themoviedb"]);
@@ -571,10 +570,24 @@ namespace ThemeService.Controllers
             theme.episode = GetInt(form_data["episode"]);
             theme.extract_length = GetInt(form_data["extract_length"]);
             theme.series_name = TrimString(form_data["series_name"]);
+            theme.edit_by = user_info.LoginId;
 
             store.UpdateTheme(theme);
 
             return RedirectToAction("ShowItemInfo", "Home", new { id = theme.id });
+        }
+
+        public IActionResult ItemHistory(int id)
+        {
+            GitHubUser user_info = Utils.UserDetails.GetUserInfo(User);
+            ViewData["user_info"] = user_info;
+
+            Store store = new Store(_config);
+
+            List<ThemeData> history_data = store.GetThemeHistory(id);
+            ViewData["history"] = history_data;
+
+            return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

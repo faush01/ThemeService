@@ -8,6 +8,8 @@ CREATE TABLE theme_data
    added_date DateTime DEFAULT GETDATE() NOT NULL,
    added_by varchar(256),
    edit_date DateTime DEFAULT GETDATE() NOT NULL,
+   edit_by varchar(256),
+   hidden bit DEFAULT 0 NOT NULL,
    
    imdb varchar(256),
    themoviedb varchar(256),
@@ -51,3 +53,31 @@ INSERT INTO theme_verify (item_id, verified_by)
 VALUES (10, 'faush01');
 
 SELECT * FROM theme_verify;
+
+-- create history table
+
+DROP TABLE theme_history;
+CREATE TABLE theme_history 
+( 
+   id int IDENTITY(1,1) NOT NULL,
+   item_id int NOT NULL,
+   
+   edit_date DateTime DEFAULT GETDATE() NOT NULL,
+   edit_by varchar(256),
+   hidden bit DEFAULT 0 NOT NULL,
+   
+   imdb varchar(256),
+   themoviedb varchar(256),
+   thetvdb varchar(256),
+   
+   series_name varchar(512),
+   season int,
+   episode int,
+   extract_length int
+);
+ALTER TABLE theme_history ADD CONSTRAINT pk_theme_history_id PRIMARY KEY(id);
+
+INSERT INTO theme_history (item_id, )
+VALUES (10, 'faush01');
+
+SELECT * FROM theme_history;
