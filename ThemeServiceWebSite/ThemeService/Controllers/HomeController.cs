@@ -584,7 +584,19 @@ namespace ThemeService.Controllers
 
             Store store = new Store(_config);
 
-            List<ThemeData> history_data = store.GetThemeHistory(id);
+            ThemeQueryOptions options = new ThemeQueryOptions();
+            options.CpData = true;
+            options.hidden = null;
+            options.Id.Add(id.ToString());
+
+            List<ThemeData> theme_list = store.GetThemeDataList(options);
+
+            List<ThemeData> history_data = new List<ThemeData>();
+            history_data.Add(theme_list[0]);
+
+            List<ThemeData> history = store.GetThemeHistory(id);
+            history_data.AddRange(history);
+
             ViewData["history"] = history_data;
 
             return View();

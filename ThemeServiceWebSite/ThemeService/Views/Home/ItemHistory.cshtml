@@ -1,10 +1,15 @@
 ﻿@{
 
-	List<ThemeData> history_data = (List<ThemeData>)ViewData["history"];
-	if(history_data == null)
-	{
-		history_data = new List<ThemeData>();
-	}
+    List<ThemeData> history_data = (List<ThemeData>)ViewData["history"];
+    if(history_data == null)
+    {
+        history_data = new List<ThemeData>();
+    }
+    string added_by = "";
+    if (history_data.Count > 0)
+    {
+        added_by = history_data[0].added_by;
+    }
 }
 
 <h4>Item History</h4>
@@ -13,6 +18,7 @@
     <thead>
         <tr>
             <th scope="col" style="padding: 1px;">Edited</th>
+            <th scope="col" style="padding: 1px;">Edited By</th>
             <th scope="col" style="padding: 1px;">Hidden</th>
             <th scope="col" style="padding: 1px;">Imdb</th>
             <th scope="col" style="padding: 1px;">TheMovieDB</th>
@@ -30,7 +36,15 @@
     {
         <tr>
 
-            <td style="padding: 1px; white-space: nowrap;">@theme.edit_date (@theme.edit_by)</td>
+            <td style="padding: 1px; white-space: nowrap;">@theme.edit_date.Value.ToString("yyyy-MM-dd HH:mm")</td>
+            @if(!string.IsNullOrEmpty(theme.edit_by))
+            {
+                <td style="padding: 1px; white-space: nowrap;">@theme.edit_by</td>
+            }
+            else
+            {
+                <td style="padding: 1px; white-space: nowrap;">@added_by</td>
+            }
             <td style="padding: 1px; white-space: nowrap;">@theme.hidden</td>
             <td style="padding: 1px; white-space: nowrap;">@theme.imdb</td>
             <td style="padding: 1px; white-space: nowrap;">@theme.themoviedb</td>

@@ -136,9 +136,8 @@
             <th scope="col" style="padding: 1px;">TheMovieDB</th>
             <th scope="col" style="padding: 1px;">TheTvDB</th>
             <th scope="col" style="padding: 1px;">Series Name</th>
-            <th scope="col" style="padding: 1px;">Season</th>
-            <th scope="col" style="padding: 1px;">Episode</th>
             <th scope="col" style="padding: 1px;">Added</th>
+            <th scope="col" style="padding: 1px;">Added By</th>
             <th scope="col" style="padding: 1px;">Verified</th>
         </tr>
     </thead>
@@ -163,9 +162,10 @@
                 <a href="https://thetvdb.com/?tab=series&id=@theme.thetvdb" target="_blank">@theme.thetvdb</a>
             </td>
             <td style="padding: 1px; white-space: nowrap;">@theme.series_name</td>
-            <td style="padding: 1px; white-space: nowrap;">@theme.season</td>
-            <td style="padding: 1px; white-space: nowrap;">@theme.episode</td>
+            
             <td style="padding: 1px; white-space: nowrap;">@theme.added_date.Value.ToString("yyyy-MM-dd HH:mm")</td>
+            <td style="padding: 1px; white-space: nowrap;">@theme.added_by</td>
+
             <td style="padding: 1px; white-space: nowrap;">@theme.verify_count</td>
         </tr>
     }

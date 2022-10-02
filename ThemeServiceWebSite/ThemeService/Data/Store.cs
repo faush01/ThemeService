@@ -262,7 +262,18 @@ namespace ThemeService.Data
 
         public List<ThemeData> GetThemeHistory(int id)
         {
-            string sql = "SELECT item_id, edit_date, edit_by, hidden, imdb, themoviedb, thetvdb, series_name, season, episode, extract_length " +
+            string sql = "SELECT " +
+                "item_id, " +
+                "edit_date, " +
+                "edit_by, " + 
+                "hidden, " + 
+                "imdb, " + 
+                "themoviedb, " +
+                "thetvdb, " + 
+                "series_name, " + 
+                "season, " + 
+                "episode, " + 
+                "extract_length " +
                 "FROM theme_history " +
                 "WHERE item_id=@item_id " +
                 "ORDER BY edit_date DESC";
